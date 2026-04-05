@@ -1,13 +1,26 @@
+
 import uvicorn
 from fastapi import FastAPI
 from pathlib import Path
+from contextlib import asynccontextmanager
+from app.core.database import engine, Base
 
-app = FastAPI()
 
-@app.get('/hello-world')
-def hello_world():
-    return {'message': "Hello"}
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+   
+
+app = FastAPI(title="AI Football Predictor", lifespan=lifespan)
+
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "message": "Сервер запущен"}
 
 
 
