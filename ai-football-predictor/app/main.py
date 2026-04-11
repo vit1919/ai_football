@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from pathlib import Path
 from contextlib import asynccontextmanager
 from app.core.database import engine, Base
+from app.api.routes.today_mathes import router as today_matches_router
 
 
 
@@ -16,6 +17,7 @@ async def lifespan(app: FastAPI):
    
 
 app = FastAPI(title="AI Football Predictor", lifespan=lifespan)
+app.include_router(today_matches_router)
 
 
 @app.get("/health")

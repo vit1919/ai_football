@@ -3,7 +3,7 @@ import httpx
 from schemas.match_schema import MatchSchema
 
 
-async def get_matches_today_top5():
+async def get_matches_today_top5() -> list:
     date = datetime.utcnow().strftime("%Y%m%d")
 
     matches = []
@@ -11,7 +11,7 @@ async def get_matches_today_top5():
 
     for league in top5:
         url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league}/scoreboard"
-        
+
         params = {"dates": date}
 
         async with httpx.AsyncClient() as client:
@@ -22,12 +22,7 @@ async def get_matches_today_top5():
             league_mathes = extract_matches(data)
             matches.extend(league_mathes)
 
-
-
     return matches
-
-
-
 
 def extract_matches(data: dict) -> list[MatchSchema]:
 
