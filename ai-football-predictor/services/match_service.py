@@ -1,14 +1,14 @@
 from models.match import Match
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.match_schema import MatchSchema
+from schemas import MatchSchema, MatchSchemaIndexPage
 
 
-async def save_matches(db: AsyncSession, matches: list[MatchSchema]):
+async def save_matches(db: AsyncSession, matches: list[MatchSchema]) -> dict:
 
     if not matches:
-        return 
-        
+        return {'matches_received': 0, 'added': 0}
+
     event_ids = [match.event_id for match in matches]
 
     stmt = select(Match.event_id).where(Match.event_id.in_(event_ids))
@@ -26,5 +26,13 @@ async def save_matches(db: AsyncSession, matches: list[MatchSchema]):
         'added': len(new_matches)
     }
 
- 
+# async def get_matches(db: AsyncSession, leagues: list[str]):
+#     stmt = select(Match).where(Match.league_slug.in_(leagues))
+#     result = await db.execute(stmt)
+
+
+
+
+
+
  

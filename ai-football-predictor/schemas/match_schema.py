@@ -1,8 +1,9 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-class MatchSchema(BaseModel):
-    
+
+
+class MatchBase(BaseModel):
     league_id : int
     league_name : str | None = None
     league_slug : str
@@ -13,19 +14,26 @@ class MatchSchema(BaseModel):
     state : str
     completed : bool
 
+    home_team_id : int
+    home_team_name : str
+   
+    away_team_id : int
+    away_team_name : str
+
+  
+class MatchSchema(MatchBase):
+    
     venue_id : int | None = None
     venue_name : str | None = None
 
-    home_team_id : int
-    home_team_name : str
+
     home_team_form : str | None = None
     home_team_record : str | None = None
     home_team_logo : str | None = None
     home_team_leader_id : int | None = None
     home_team_leader_name : str | None = None
 
-    away_team_id : int
-    away_team_name : str
+
     away_team_form : str | None = None
     away_team_record : str | None = None
     away_team_logo : str | None = None
@@ -76,5 +84,21 @@ class MatchSchema(BaseModel):
     stats_url: str | None = None
     highlights_url: str | None = None
 
+class MatchSchemaIndexPage(MatchBase):
+
+    venue_id : int | None = None
+    venue_name : str | None = None
+
+    home_team_form : str | None = None
+    home_team_record : str | None = None
+    home_team_logo : str | None = None
+
+    away_team_form : str | None = None
+    away_team_record : str | None = None
+    away_team_logo : str | None = None
+
+    winner : str | None = None
+    home_score: int | None = None
+    away_score: int | None = None
 
     
