@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-
-
 class MatchBase(BaseModel):
     league_id : int
     league_name : str | None = None

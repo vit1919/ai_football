@@ -26,9 +26,22 @@ async def save_matches(db: AsyncSession, matches: list[MatchSchema]) -> dict:
         'added': len(new_matches)
     }
 
-# async def get_matches(db: AsyncSession, leagues: list[str]):
-#     stmt = select(Match).where(Match.league_slug.in_(leagues))
-#     result = await db.execute(stmt)
+async def get_matches(db: AsyncSession, leagues: list[str]) -> list[Match]:
+    stmt = select(Match).where(Match.league_slug.in_(leagues))
+    result = await db.execute(stmt)
+    matches = result.scalars().all()
+
+    return matches
+
+
+async def get_match_by_id(db: AsyncSession, event_id: int) -> Match | None:
+    stmt = select(Match).where(Match.event_id == event_id)
+    result = await db.execute(stmt)
+
+    return result.scalars().one_or_none()
+    
+
+
 
 
 
