@@ -1,19 +1,37 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import httpx
 from schemas.match_schema import MatchSchema
 
 
 async def get_matches_today(league_list: list[str]) -> list[MatchSchema]:
-    date = datetime.utcnow().strftime("%Y%m%d")
-    matches: list[MatchSchema] = []
+    today = datetime.now(timezone.utc)
+    yesterday = today - timedelta(days=1)
+    tomorrow = today + timedelta(days=1)
 
-    async with httpx.AsyncClient(timeout=20) as client:
+    dates = [
+        yesterday.strftime("%Y%m%d"),
+        today.strftime("%Y%m%d"),
+        tomorrow.strftime("%Y%m%d"),
+    ]
+
+    matches: list[MatchSchema] = []
+    seen_event_ids: set[int] = set()
+
+    async with httpx.AsyncClient(timeout=30) as client:
         for league in league_list:
             url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league}/scoreboard"
-            response = await client.get(url, params={"dates": date})
-            if response.status_code == 200:
+
+            for date in dates:
+                response = await client.get(url, params={"dates": date})
+                if response.status_code != 200:
+                    continue
+
                 data = response.json()
-                matches.extend(extract_matches(data))
+                for match in extract_matches(data):
+                    if match.event_id in seen_event_ids:
+                        continue
+                    seen_event_ids.add(match.event_id)
+                    matches.append(match)
 
     return matches
 
@@ -190,9 +208,8 @@ def extract_matches(data: dict) -> list[MatchSchema]:
             matches.append(match)
 
         except Exception as e:
+            print("ERROR:", e)
             continue
-
-
 
     return matches
 

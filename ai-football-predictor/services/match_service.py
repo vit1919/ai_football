@@ -1,3 +1,4 @@
+from datetime import datetime
 from models.match import Match
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,12 +27,12 @@ async def save_matches(db: AsyncSession, matches: list[MatchSchema]) -> dict:
         'added': len(new_matches)
     }
 
-async def get_matches(db: AsyncSession, leagues: list[str]) -> list[Match]:
-    stmt = select(Match).where(Match.league_slug.in_(leagues))
-    result = await db.execute(stmt)
-    matches = result.scalars().all()
+# async def get_matches(db: AsyncSession, leagues: list[str]) -> list[Match]:
+#     stmt = select(Match).where(Match.league_slug.in_(leagues))
+#     result = await db.execute(stmt)
+#     matches = result.scalars().all()
 
-    return matches
+#     return matches
 
 
 async def get_match_by_id(db: AsyncSession, event_id: int) -> Match | None:
@@ -41,6 +42,19 @@ async def get_match_by_id(db: AsyncSession, event_id: int) -> Match | None:
     return result.scalars().one_or_none()
     
 
+async def get_matches(db: AsyncSession, leagues: list[str] | None = None, start_at: datetime | None = None, end_at: datetime | None = None,) -> list[Match]:
+    stmt = select(Match)
+
+    if leagues:
+        stmt = stmt.where(Match.league_slug.in_(leagues))
+    if start_at is not None:
+        stmt = stmt.where(Match.date >= start_at)
+    if end_at is not None:
+        stmt = stmt.where(Match.date < end_at)
+
+    stmt = stmt.order_by(Match.date.asc())
+    result = await db.execute(stmt)
+    return result.scalars().all()
 
 
 
@@ -48,4 +62,5 @@ async def get_match_by_id(db: AsyncSession, event_id: int) -> Match | None:
 
 
 
- 
+
+
