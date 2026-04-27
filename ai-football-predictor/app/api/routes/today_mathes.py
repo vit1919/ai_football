@@ -1,4 +1,4 @@
-import datetime
+
 from fastapi import APIRouter, Depends, HTTPException
 from app.api.dependencies import get_db
 from services import get_matches_today, save_matches, get_matches, get_match_by_id
@@ -9,9 +9,11 @@ from datetime import datetime
 
 router = APIRouter()
 
+TOP5_LEAGUES = ['eng.1', 'esp.1', 'ita.1', 'ger.1', 'fra.1']
+
 @router.post("/sync_matches")
 async def sync_matches(db: AsyncSession = Depends(get_db)) -> dict:
-    matches = await get_matches_today(['eng.1', 'esp.1', 'ita.1', 'ger.1', 'fra.1'])
+    matches = await get_matches_today(TOP5_LEAGUES)
     stats = await save_matches(db, matches)
 
     return {
@@ -38,10 +40,16 @@ async def list_matches_today(db: AsyncSession = Depends(get_db)) -> list[MatchSc
 
 
 #upcoming
-@router.get("/matches/upcoming", response_model=list[MatchSchemaIndexPage])
-async def matches_upcoming(db: AsyncSession = Depends(get_db)):
-    now = get_now_utc()
-    return await get_matches(db, start_at=now)
+# @router.get("/matches/upcoming", response_model=list[MatchSchemaIndexPage])
+# async def matches_upcoming(db: AsyncSession = Depends(get_db)):
+#     now = get_now_utc()
+#     return await get_matches(db, start_at=now)
+
+
+# @router.get("/matches/past", response_model=list[MatchSchemaIndexPage])
+# async def matches_past(db: AsyncSession = Depends(get_db)):
+#     now = get_now_utc()
+#     return await get_matches(db, end_at=now)
 
 
 @router.get("/matches/{event_id}", response_model=MatchSchema)

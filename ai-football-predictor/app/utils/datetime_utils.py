@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-def get_today_range_utc():
+def get_today_range_utc() -> tuple[datetime, datetime]:
     now = datetime.now(timezone.utc)
 
     start = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -9,5 +9,5 @@ def get_today_range_utc():
     return start, end
 
 
-def get_now_utc():
+def get_now_utc() -> datetime:
     return datetime.now(timezone.utc)
