@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
+from pydantic import AwareDatetime
 
 class MatchBase(BaseModel):
     league_id : int
@@ -8,7 +9,7 @@ class MatchBase(BaseModel):
     year : int
 
     event_id : int
-    date : datetime 
+    date : datetime
     state : str
     completed : bool
 
@@ -17,6 +18,8 @@ class MatchBase(BaseModel):
    
     away_team_id : int
     away_team_name : str
+
+    model_config = {"from_attributes": True}
 
   
 class MatchSchema(MatchBase):
@@ -82,8 +85,8 @@ class MatchSchema(MatchBase):
     stats_url: str | None = None
     highlights_url: str | None = None
 
-class MatchSchemaIndexPage(MatchBase):
 
+class MatchSchemaIndexPage(MatchBase):
     venue_id : int | None = None
     venue_name : str | None = None
 

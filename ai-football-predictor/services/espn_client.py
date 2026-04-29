@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 import httpx
 from schemas.match_schema import MatchSchema
-
+import asyncio
 
 async def get_matches_today(league_list: list[str]) -> list[MatchSchema]:
     today = datetime.now(timezone.utc)
@@ -17,24 +17,57 @@ async def get_matches_today(league_list: list[str]) -> list[MatchSchema]:
     matches: list[MatchSchema] = []
     seen_event_ids: set[int] = set()
 
-    async with httpx.AsyncClient(timeout=30) as client:
+    async with httpx.AsyncClient(timeout=60.0) as client:
         for league in league_list:
             url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league}/scoreboard"
 
             for date in dates:
-                response = await client.get(url, params={"dates": date})
-                if response.status_code != 200:
+                try:
+                    response = await client.get(url, params={"dates": date})
+                    if response.status_code != 200:
+                        continue
+
+                    data = response.json()
+                    
+                    if "events" not in data:
+                        continue
+
+                    for match in extract_matches(data):
+                        if match.event_id in seen_event_ids:
+                            continue
+                        seen_event_ids.add(match.event_id)
+                        matches.append(match)
+                        
+                except httpx.RequestError as e:
+                    print(f"Ошибка сети при парсинге {league} за {date}: {e}")
+                    continue
+                except Exception as e:
+                    print(f"Критическая ошибка при обработке {league}: {e}")
                     continue
 
-                data = response.json()
-                for match in extract_matches(data):
-                    if match.event_id in seen_event_ids:
-                        continue
-                    seen_event_ids.add(match.event_id)
-                    matches.append(match)
+                await asyncio.sleep(0.5)
 
     return matches
 
+
+def safe_float(value):
+    try:
+        return float(value)
+    except:
+        return None
+
+def safe_int(value):
+    try:
+        return int(value)
+    except:
+        return None
+
+def extract_leader(team):
+    try:
+        leader = team["leaders"][0]["leaders"][0]["athlete"]
+        return leader.get("id"), leader.get("displayName")
+    except Exception:
+        return None, None
 
 def extract_matches(data: dict) -> list[MatchSchema]:
 
@@ -65,8 +98,7 @@ def extract_matches(data: dict) -> list[MatchSchema]:
             home_team_form = home_team["form"] if "form" in home_team else None
             home_team_record = home_team["records"][0]["summary"] if "records" in home_team and len(home_team["records"]) > 0 else None
             home_team_logo = home_team["team"]["logo"] if "logo" in home_team["team"] else None
-            home_team_leader_id = home_team["leaders"][0]["athlete"]["id"] if "leaders" in home_team and len(home_team["leaders"]) > 0 else None
-            home_team_leader_name = home_team["leaders"][0]["athlete"]["displayName"] if "leaders" in home_team and len(home_team["leaders"]) > 0 else None  
+            home_team_leader_id, home_team_leader_name = extract_leader(home_team)  
 
             away_team = event["competitions"][0]["competitors"][1]
             away_team_id = away_team["id"]
@@ -74,8 +106,7 @@ def extract_matches(data: dict) -> list[MatchSchema]:
             away_team_form = away_team["form"] if "form" in away_team else None 
             away_team_record = away_team["records"][0]["summary"] if "records" in away_team and len(away_team["records"]) > 0 else None
             away_team_logo = away_team["team"]["logo"] if "logo" in away_team["team"] else None
-            away_team_leader_id = away_team["leaders"][0]["athlete"]["id"] if "leaders" in away_team and len(away_team["leaders"]) > 0 else None
-            away_team_leader_name = away_team["leaders"][0]["athlete"]["displayName"] if "leaders" in away_team and len(away_team["leaders"]) > 0 else None
+            away_team_leader_id, away_team_leader_name = extract_leader(away_team)
 
             if state == "post":
                 home_score = int(home_team["score"]) if "score" in home_team else None
@@ -100,35 +131,48 @@ def extract_matches(data: dict) -> list[MatchSchema]:
             home_shots_on_target = next((int(s["displayValue"]) for s in home_team["statistics"] if s["name"] == "shotsOnTarget"), None) if "statistics" in home_team else None
             away_shots_on_target = next((int(s["displayValue"]) for s in away_team["statistics"] if s["name"] == "shotsOnTarget"), None) if "statistics" in away_team else None
 
-            has_odds = "odds" in event["competitions"][0] and len(event["competitions"][0]["odds"]) > 0 and event["competitions"][0]["odds"][0] is not None
+            odds_data = None
+            if "odds" in event["competitions"][0] and event["competitions"][0]["odds"]:
+                odds_data = event["competitions"][0]["odds"][0]
 
-            odds_provider_id = int(event["competitions"][0]["odds"][0]["provider"]["id"]) if has_odds else None
-            odds_provider_name = event["competitions"][0]["odds"][0]["provider"]["name"] if has_odds else None
+            odds_provider_id = safe_int(odds_data.get("provider", {}).get("id")) if odds_data else None
+            odds_provider_name = odds_data.get("provider", {}).get("name") if odds_data else None
 
-            over_under = float(event["competitions"][0]["odds"][0]["overUnder"]) if has_odds else None
+            over_under = safe_float(odds_data.get("overUnder")) if odds_data else None
 
-            home_ml_open = float(event["competitions"][0]["odds"][0]["moneyline"]["home"]["open"]["odds"]) if has_odds else None
-            home_ml_close = float(event["competitions"][0]["odds"][0]["moneyline"]["home"]["close"]["odds"]) if has_odds else None
-            away_ml_open = float(event["competitions"][0]["odds"][0]["moneyline"]["away"]["open"]["odds"]) if has_odds else None
-            away_ml_close = float(event["competitions"][0]["odds"][0]["moneyline"]["away"]["close"]["odds"]) if has_odds else None
-            draw_ml_open = float(event["competitions"][0]["odds"][0]["moneyline"]["draw"]["open"]["odds"]) if has_odds else None
-            draw_ml_close = float(event["competitions"][0]["odds"][0]["moneyline"]["draw"]["close"]["odds"]) if has_odds else None
+            ml = odds_data.get("moneyline", {}) if odds_data else {}
 
-            total_line = float(event["competitions"][0]["odds"][0]["total"]["over"]["close"]["line"].replace("o", "").replace("u", "")) if has_odds else None
-            over_odds_open = float(event["competitions"][0]["odds"][0]["total"]["over"]["open"]["odds"]) if has_odds else None
-            over_odds_close = float(event["competitions"][0]["odds"][0]["total"]["over"]["close"]["odds"]) if has_odds else None
-            under_odds_open = float(event["competitions"][0]["odds"][0]["total"]["under"]["open"]["odds"]) if has_odds else None
-            under_odds_close = float(event["competitions"][0]["odds"][0]["total"]["under"]["close"]["odds"]) if has_odds else None
+            home_ml_open = safe_float(ml.get("home", {}).get("open", {}).get("odds"))
+            home_ml_close = safe_float(ml.get("home", {}).get("close", {}).get("odds"))
+            away_ml_open = safe_float(ml.get("away", {}).get("open", {}).get("odds"))
+            away_ml_close = safe_float(ml.get("away", {}).get("close", {}).get("odds"))
+            draw_ml_open = safe_float(ml.get("draw", {}).get("open", {}).get("odds"))
+            draw_ml_close = safe_float(ml.get("draw", {}).get("close", {}).get("odds"))
 
-            home_spread_line_open = float(event["competitions"][0]["odds"][0]["pointSpread"]["home"]["open"]["line"]) if has_odds else None
-            home_spread_line_close = float(event["competitions"][0]["odds"][0]["pointSpread"]["home"]["close"]["line"]) if has_odds else None
-            home_spread_odds_open = float(event["competitions"][0]["odds"][0]["pointSpread"]["home"]["open"]["odds"]) if has_odds else None
-            home_spread_odds_close = float(event["competitions"][0]["odds"][0]["pointSpread"]["home"]["close"]["odds"]) if has_odds else None
+            total = odds_data.get("total", {}) if odds_data else {}
 
-            away_spread_line_open = float(event["competitions"][0]["odds"][0]["pointSpread"]["away"]["open"]["line"]) if has_odds else None
-            away_spread_line_close = float(event["competitions"][0]["odds"][0]["pointSpread"]["away"]["close"]["line"]) if has_odds else None
-            away_spread_odds_open = float(event["competitions"][0]["odds"][0]["pointSpread"]["away"]["open"]["odds"]) if has_odds else None
-            away_spread_odds_close = float(event["competitions"][0]["odds"][0]["pointSpread"]["away"]["close"]["odds"]) if has_odds else None
+            line_raw = total.get("over", {}).get("close", {}).get("line")
+            if line_raw:
+                line_raw = line_raw.replace("o", "").replace("u", "")
+
+            total_line = safe_float(line_raw)
+
+            over_odds_open = safe_float(total.get("over", {}).get("open", {}).get("odds"))
+            over_odds_close = safe_float(total.get("over", {}).get("close", {}).get("odds"))
+            under_odds_open = safe_float(total.get("under", {}).get("open", {}).get("odds"))
+            under_odds_close = safe_float(total.get("under", {}).get("close", {}).get("odds"))
+
+            spread = odds_data.get("pointSpread", {}) if odds_data else {}
+
+            home_spread_line_open = safe_float(spread.get("home", {}).get("open", {}).get("line"))
+            home_spread_line_close = safe_float(spread.get("home", {}).get("close", {}).get("line"))
+            home_spread_odds_open = safe_float(spread.get("home", {}).get("open", {}).get("odds"))
+            home_spread_odds_close = safe_float(spread.get("home", {}).get("close", {}).get("odds"))
+
+            away_spread_line_open = safe_float(spread.get("away", {}).get("open", {}).get("line"))
+            away_spread_line_close = safe_float(spread.get("away", {}).get("close", {}).get("line"))
+            away_spread_odds_open = safe_float(spread.get("away", {}).get("open", {}).get("odds"))
+            away_spread_odds_close = safe_float(spread.get("away", {}).get("close", {}).get("odds"))
 
             match_url = event["links"][0]["href"] if "links" in event and len(event["links"]) > 0 else None
             stats_url = event["links"][1]["href"] if "links" in event and len(event["links"]) > 1 else None
@@ -208,7 +252,7 @@ def extract_matches(data: dict) -> list[MatchSchema]:
             matches.append(match)
 
         except Exception as e:
-            print("ERROR:", e)
+            print(f"ERROR: {e} EVENT: {event.get('id')}")
             continue
 
     return matches

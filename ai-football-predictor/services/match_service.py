@@ -51,6 +51,11 @@ async def get_matches(db: AsyncSession, leagues: list[str] | None = None, start_
     return result.scalars().all()
 
 
+async def get_all_matches(db: AsyncSession) -> list[Match]:
+    stmt = select(Match).order_by(Match.date.asc())
+    result = await db.execute(stmt)
+
+    return result.scalars().all()
 
 
 
