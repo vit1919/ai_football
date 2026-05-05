@@ -1,5 +1,4 @@
 import datetime
-
 from pydantic import BaseModel, EmailStr, AwareDatetime, Field
 
 
@@ -26,6 +25,7 @@ class UserRead(UserBase):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
 
 class Token(BaseModel):
     access_token: str
