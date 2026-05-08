@@ -1,7 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import User
-
+from pydantic import EmailStr
+from app.core.security import hash_password
+from schemas.user_schema import UserCreate
 
 async def get_user_by_id(db: AsyncSession, id: int) -> User | None:
     stmt = select(User).where(User.id == id)
@@ -20,3 +22,33 @@ async def get_user_by_username(db: AsyncSession, username: str) -> User | None:
     result = await db.execute(stmt)
 
     return result.scalar_one_or_none()
+
+async def user_email_exists(db: AsyncSession, email: EmailStr) -> bool:
+    stmt = select(User).where(User.email == email)
+    result = await db.execute(stmt)
+
+    if result.scalar_one_or_none() is not None:
+        return True
+    return False
+
+async def username_exists(db: AsyncSession, username: str) -> bool:
+    stmt = select(User).where(User.username == username)
+    result = await db.execute(stmt)
+
+    if result.scalar_one_or_none() is not None:
+        return True
+    return False
+
+async def create_user(db: AsyncSession, user_data: UserCreate) -> User:
+    user = User(
+        email=user_data.email,
+        username=user_data.username,
+        hashed_password=hash_password(user_data.password)
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+
+    return user
+
+
