@@ -9,7 +9,7 @@ from datetime import datetime
 from pydantic import AwareDatetime
 from app.core.constants import TOP5_LEAGUES, MAIN_LEAGUES 
 
-router = APIRouter()
+router = APIRouter(tags=["matches"])
 
 @router.post("/sync_matches")
 async def sync_matches(db: AsyncSession = Depends(get_db)) -> dict:
