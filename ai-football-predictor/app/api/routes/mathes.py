@@ -1,6 +1,6 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from app.api.dependencies import get_db
+from app.api.dependencies import get_current_user, get_db
 from services import get_matches_today, save_matches, get_matches, get_match_by_id, get_all_matches
 from schemas import MatchSchemaIndexPage, MatchSchema
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,7 +11,7 @@ from app.core.constants import TOP5_LEAGUES, MAIN_LEAGUES
 
 router = APIRouter(tags=["matches"])
 
-@router.post("/sync_matches")
+@router.post("/sync_matches", dependencies=[Depends(get_current_user)])
 async def sync_matches(db: AsyncSession = Depends(get_db)) -> dict:
     matches = await get_matches_today(MAIN_LEAGUES)
     stats = await save_matches(db, matches)

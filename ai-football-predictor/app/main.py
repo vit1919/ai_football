@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from pathlib import Path
 from contextlib import asynccontextmanager
 from app.core.database import engine, Base
-from app.api.routes.today_mathes import router as today_matches_router
+from app.api.routes.mathes import router as today_matches_router
 from app.api.routes.auth import router as auth
 
 
