@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime, timezone
 from pydantic import AwareDatetime
+from .prediction_schema import PredictionRead
 
 class MatchBase(BaseModel):
     league_id : int
@@ -23,7 +24,7 @@ class MatchBase(BaseModel):
 
   
 class MatchSchema(MatchBase):
-    
+    id: int | None = None
     venue_id : int | None = None
     venue_name : str | None = None
 
@@ -85,8 +86,12 @@ class MatchSchema(MatchBase):
     stats_url: str | None = None
     highlights_url: str | None = None
 
+class MatchDetailResponse(BaseModel):
+    match: MatchSchema
+    user_prediction: PredictionRead | None = None
 
 class MatchSchemaIndexPage(MatchBase):
+    id: int
     venue_id : int | None = None
     venue_name : str | None = None
 

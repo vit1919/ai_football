@@ -1,13 +1,16 @@
 
+from re import match
+
 from fastapi import APIRouter, Depends, HTTPException, Query
-from app.api.dependencies import get_current_user, get_db
-from services import get_matches_today, save_matches, get_matches, get_match_by_id, get_all_matches
-from schemas import MatchSchemaIndexPage, MatchSchema
+from app.api.dependencies import get_current_user, get_current_user_optional, get_db
+from services import get_matches_today, save_matches, get_matches, get_match_by_id, get_all_matches, get_user_prediction_for_match, get_match_detail
+from schemas import MatchSchemaIndexPage, MatchSchema, MatchDetailResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.utils import get_today_range_utc, get_now_utc
 from datetime import datetime
 from pydantic import AwareDatetime
 from app.core.constants import TOP5_LEAGUES, MAIN_LEAGUES 
+from models import User
 
 router = APIRouter(tags=["matches"])
 
@@ -45,10 +48,12 @@ async def list_matches_today(db: AsyncSession = Depends(get_db)) -> list[MatchSc
     return await get_matches(db, start_at=start, end_at=end)
 
 
-@router.get("/matches/{event_id}", response_model=MatchSchema)
-async def get_detailed_match(event_id : int, db: AsyncSession = Depends(get_db)) -> MatchSchema:
-    match = await get_match_by_id(db, event_id)
-    if not match:
-        raise HTTPException(status_code=404, detail="Match not found")
-    
-    return match
+@router.get("/matches/{event_id}", response_model=MatchDetailResponse)
+async def get_detailed_match(
+    event_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user_optional),
+):
+    match, user_prediction = await get_match_detail(db, event_id, current_user)
+    return MatchDetailResponse(match=match, user_prediction=user_prediction)
+

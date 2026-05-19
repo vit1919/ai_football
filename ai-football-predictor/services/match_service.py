@@ -1,8 +1,10 @@
 from datetime import datetime
-from models.match import Match
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas import MatchSchema, MatchSchemaIndexPage
+from services.prediction_service import get_user_prediction_for_match
+from models import User, Match
 
 
 async def save_matches(db: AsyncSession, matches: list[MatchSchema]) -> dict:
@@ -57,7 +59,16 @@ async def get_all_matches(db: AsyncSession) -> list[Match]:
 
     return result.scalars().all()
 
+async def get_match_detail(db: AsyncSession, event_id: int, user: User | None):
+    match = await get_match_by_id(db, event_id)
+    if not match:
+        raise HTTPException(status_code=404, detail="Match not found")
 
+    user_prediction = None
+    if user:
+        user_prediction = await get_user_prediction_for_match(db, user, match.id)
+
+    return match, user_prediction
 
 
 

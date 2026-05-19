@@ -27,7 +27,6 @@ async def register(data: UserCreate, db: AsyncSession = Depends(get_db)):
     user = await create_user(db, data)
     return user
 
-
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
 
