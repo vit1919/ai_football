@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 import httpx
 from schemas.match_schema import MatchSchema
 import asyncio
+from app.utils import safe_int, safe_float
 
 async def get_matches_today(league_list: list[str]) -> list[MatchSchema]:
     today = datetime.now(timezone.utc)
@@ -28,7 +29,6 @@ async def get_matches_today(league_list: list[str]) -> list[MatchSchema]:
                         continue
 
                     data = response.json()
-                    
                     if "events" not in data:
                         continue
 
@@ -49,18 +49,6 @@ async def get_matches_today(league_list: list[str]) -> list[MatchSchema]:
 
     return matches
 
-
-def safe_float(value):
-    try:
-        return float(value)
-    except:
-        return None
-
-def safe_int(value):
-    try:
-        return int(value)
-    except:
-        return None
 
 def extract_leader(team):
     try:
