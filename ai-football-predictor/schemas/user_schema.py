@@ -42,6 +42,7 @@ class UserUpdate(BaseModel):
 class UserRead(UserBase):
     id: int
     is_active: bool
+    total_points: int
     created_at: datetime
     updated_at: datetime
 

@@ -36,7 +36,7 @@ async def save_team_to_db(db: AsyncSession, team: TeamSchema | None) -> Team:
     db.add(new_team)
     try:
         await db.commit()
-    except Exception:
+    except SQLAlchemyError:
         await db.rollback()
         raise
     await db.refresh(new_team)

@@ -9,12 +9,32 @@ from app.api.routes.auth import router as auth
 from app.api.routes.predictions import router as predictions_router
 from app.api.routes.teams import router as teams
 
+from app.scheduler.scheduler import scheduler
+from app.scheduler.jobs.sync_matches import sync_matches_job
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    scheduler.add_job(
+        sync_matches_job,
+        "interval",
+        seconds=30,  
+        id="sync_matches",
+        replace_existing=True,
+    )
+
+    scheduler.start()
+
+    print("Scheduler started")
+
     yield
+
+    scheduler.shutdown()
+
+    print("Scheduler stopped")
    
 
 app = FastAPI(title="AI Football Predictor", lifespan=lifespan)

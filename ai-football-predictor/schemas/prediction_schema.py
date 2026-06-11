@@ -23,10 +23,11 @@ class PredictionRead(PredictionBase):
     source: PredictionSource
     model_name: str | None = None
     model_id: int | None = None
-    is_correct: bool | None = None
+    confidence: float | None = None
     locked_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
+    
 
     model_config = {"from_attributes": True, "use_enum_values": True}
 
@@ -43,4 +44,5 @@ class PredictionRead(PredictionBase):
 class PredictionUpdate(BaseModel):
     score_home: int | None = Field(default=None, ge=0)
     score_away: int | None = Field(default=None, ge=0)
+    confidence: float | None = None
     predicted_mvp: str | None = None

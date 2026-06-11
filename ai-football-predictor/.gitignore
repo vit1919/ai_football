@@ -80,6 +80,7 @@ Thumbs.db
 data/
 temp/
 tmp/
+downloaded_files/
 
 log.txt
 

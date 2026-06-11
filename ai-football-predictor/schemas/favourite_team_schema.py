@@ -5,9 +5,6 @@ from schemas import TeamRead
 class FavouriteTeamBase(BaseModel):
     team_id : int
 
-# class FavouriteTeamCreate(FavouriteTeamBase):
-#     pass
-
 class FavouriteTeamRead(FavouriteTeamBase):
     id: int
     team: TeamRead 

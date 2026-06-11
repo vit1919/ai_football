@@ -8,9 +8,10 @@ TOP5_LEAGUES = [
 
 MAIN_LEAGUES = TOP5_LEAGUES + [
     # 'ned.1',
-    'por.1',
+    # 'por.1',
+    'bra.1',
     'uefa.champions',
-    'uefa.europa',
+    # 'uefa.europa',
 ]
 
 UEFA_CLUBS = [
@@ -32,4 +33,10 @@ CUPS_AND_SUPER_CUPS = [
     'ita.super_cup',
     'fra.coupe_de_france',
     'fra.super_cup',
+]
+
+FOR_TESTING = [
+    "nonfifa",
+    "conmebol.libertadores",
+    "usa.usl.1"
 ]
