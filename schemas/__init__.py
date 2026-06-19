@@ -8,6 +8,6 @@ from .favourite_team_schema import FavouriteTeamBase, FavouriteTeamRead
 __all__ = ["MatchSchema", "MatchSchemaIndexPage", "MatchDetailResponse",
         "Token","TokenData", "UserBase", "UserCreate", "UserRead", "UserUpdate", "UserLogin",
         "PredictionBase", "PredictionCreateLLM", "PredictionCreateUser", "PredictionRead", "PredictionUpdate",
-        "TeamSchema", "TeamRead"
+        "TeamSchema", "TeamRead",
         "FavouriteTeamBase", "FavouriteTeamRead"]
     

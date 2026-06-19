@@ -36,7 +36,7 @@ CUPS_AND_SUPER_CUPS = [
 ]
 
 FOR_TESTING = [
+    "fifa.world",
     "nonfifa",
-    "conmebol.libertadores",
     "usa.usl.1"
 ]

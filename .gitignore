@@ -58,7 +58,6 @@ archive.zip
 
 
 data/
-models/
 *.joblib
 *.pkl
 *.h5
@@ -83,6 +82,7 @@ tmp/
 downloaded_files/
 
 log.txt
-
+.mimocode/
+/.mimocode/
 pip-log.txt
 pip-delete-this-directory.txt

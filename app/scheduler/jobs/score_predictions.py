@@ -1,4 +1,5 @@
 from app.core.database import AsyncSessionLocal
+from services import score_predictions
 
 async def score_predictions_job():
     try: 
