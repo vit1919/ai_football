@@ -8,6 +8,7 @@ from app.api.routes.matches import router as today_matches_router
 from app.api.routes.auth import router as auth
 from app.api.routes.predictions import router as predictions_router
 from app.api.routes.teams import router as teams
+from app.api.routes.leaderboard import router as leaderboard_router
 from app.scheduler.scheduler import scheduler
 
 
@@ -32,6 +33,7 @@ app.include_router(today_matches_router)
 app.include_router(auth)
 app.include_router(predictions_router)
 app.include_router(teams)
+app.include_router(leaderboard_router)
 
 @app.get("/health")
 async def health_check():

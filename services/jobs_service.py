@@ -36,7 +36,7 @@ async def score_predictions(db: AsyncSession) -> dict:
 
             prediction.points_awarded = points
             prediction.is_scored = True
-            prediction.scored_at = get._now_utc()
+            prediction.scored_at = get_now_utc()
 
             if prediction.user:
                 prediction.user.total_points += points

@@ -49,6 +49,14 @@ class UserRead(UserBase):
     model_config = {"from_attributes": True}
 
 
+class LeaderboardEntry(BaseModel):
+    rank: int
+    username: str
+    total_points: int
+
+    model_config = {"from_attributes": True}
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
