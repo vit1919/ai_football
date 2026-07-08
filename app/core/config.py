@@ -6,7 +6,9 @@ class Settings(BaseSettings):
     jwt_secret_key: SecretStr
     algorithm: str
     access_token_expire_minutes: int = 30
-    
+    google_api_key: str = ""
+    llm_default_model: str = "gemini-2.0-flash"
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 

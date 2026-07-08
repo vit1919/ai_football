@@ -86,6 +86,9 @@ class MatchSchema(MatchBase):
     stats_url: str | None = None
     highlights_url: str | None = None
 
+    llm_points_awarded: int | None = None
+    llm_vs_user_result: str | None = None
+
 class MatchDetailResponse(BaseModel):
     match: MatchSchema
     user_prediction: PredictionRead | None = None

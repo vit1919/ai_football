@@ -1,6 +1,7 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from .jobs.sync_matches import sync_matches_job
 from .jobs.score_predictions import score_predictions_job
+from .jobs.generate_ai_predictions import generate_ai_predictions_job
 
 scheduler = AsyncIOScheduler()
 
@@ -17,5 +18,13 @@ scheduler.add_job(
     "interval",
     minutes=10,
     id="score_predictions",
+    replace_existing=True,
+)
+
+scheduler.add_job(
+    generate_ai_predictions_job,
+    "interval",
+    minutes=5,
+    id="generate_ai_predictions",
     replace_existing=True,
 )

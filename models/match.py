@@ -85,6 +85,9 @@ class Match(Base):
     ai_predictions_generated: Mapped[bool] = mapped_column(Boolean, default=False)
     predictions_scored: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    llm_points_awarded: Mapped[int | None] = mapped_column(Integer)
+    llm_vs_user_result: Mapped[str | None] = mapped_column(String)
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
