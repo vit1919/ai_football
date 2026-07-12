@@ -6,18 +6,14 @@ from services.ai_prediction_service import generate_ai_prediction
 from services.llm_stats_service import get_llm_stats, get_llm_vs_user_stats
 from services.match_service import get_match_by_id
 from app.core.config import settings
+from app.core.constants import AVAILABLE_LLM_MODELS
 
 router = APIRouter(prefix="/llm", tags=["llm"])
-
-AVAILABLE_MODELS = [
-    LLMModelRead(name="gemini-2.0-flash", provider="google"),
-    LLMModelRead(name="gemini-2.0-pro", provider="google"),
-]
 
 
 @router.get("/models", response_model=list[LLMModelRead])
 async def list_models() -> list[LLMModelRead]:
-    return AVAILABLE_MODELS
+    return [LLMModelRead(**m) for m in AVAILABLE_LLM_MODELS]
 
 
 @router.post("/generate/{match_id}", response_model=AIPredictionResponse)

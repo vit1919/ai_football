@@ -1,4 +1,3 @@
-from email.mime import text
 import json
 from google import genai
 from app.core.config import settings

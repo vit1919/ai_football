@@ -40,3 +40,8 @@ FOR_TESTING = [
     "nonfifa",
     "usa.usl.1"
 ]
+
+AVAILABLE_LLM_MODELS = [
+    {"name": "gemini-2.0-flash", "provider": "google"},
+    {"name": "gemini-2.0-pro", "provider": "google"},
+]

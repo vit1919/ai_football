@@ -29,6 +29,7 @@ class Prediction(Base):
     model_name: Mapped[str | None] = mapped_column(String)
     model_id: Mapped[int | None] = mapped_column(Integer)
     confidence: Mapped[float | None] = mapped_column(Float)
+    selected_model: Mapped[str | None] = mapped_column(String)
 
     predicted_result: Mapped[Result] = mapped_column(Enum(Result), nullable=False)
     score_home: Mapped[int] = mapped_column(Integer, nullable=False)

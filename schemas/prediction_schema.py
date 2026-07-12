@@ -14,7 +14,7 @@ class PredictionCreateLLM(PredictionBase):
     model_id: int | None = None
 
 class PredictionCreateUser(PredictionBase):
-    pass
+    selected_model: str | None = None
     
 class PredictionRead(PredictionBase):
     id: int

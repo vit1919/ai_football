@@ -38,6 +38,7 @@ async def create_prediction(db: AsyncSession, current_user: User, data: Predicti
         score_home=data.score_home,
         score_away=data.score_away,
         predicted_mvp=data.predicted_mvp,
+        selected_model=data.selected_model,
         locked_at=match_date,
     )
 
@@ -107,6 +108,12 @@ async def delete_user_prediction(db: AsyncSession, current_user: User, predictio
     except Exception:
         await db.rollback()
         raise
+
+async def get_all_predictions(db: AsyncSession) -> list[Prediction]:
+    stmt = select(Prediction).order_by(Prediction.created_at.desc())
+    result = await db.execute(stmt)
+    return result.scalars().all()
+
 
 async def get_user_prediction_for_match(db: AsyncSession, current_user: User, match_id: int) -> Prediction | None:
     stmt = select(Prediction).where(Prediction.match_id == match_id, Prediction.user_id == current_user.id)

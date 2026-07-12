@@ -51,9 +51,9 @@ async def get_llm_vs_user_stats(db: AsyncSession) -> dict:
     result = await db.execute(stmt)
     matches = result.scalars().all()
 
-    wins = sum(1 for m in matches if m.llm_vs_user_result == "win")
+    wins = sum(1 for m in matches if m.llm_vs_user_result == "user_win")
     draws = sum(1 for m in matches if m.llm_vs_user_result == "draw")
-    losses = sum(1 for m in matches if m.llm_vs_user_result == "loss")
+    losses = sum(1 for m in matches if m.llm_vs_user_result == "user_loss")
 
     return {
         "wins": wins,

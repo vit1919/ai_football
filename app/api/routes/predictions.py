@@ -5,9 +5,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 from schemas import PredictionCreateUser, PredictionRead
 from models import User
-from services import create_prediction, get_user_predictions, update_user_prediction, delete_user_prediction, get_user_prediction_for_match
+from services import create_prediction, get_user_predictions, update_user_prediction, delete_user_prediction, get_user_prediction_for_match, get_all_predictions
 
 router = APIRouter(tags=["predictions"])
+
+
+@router.get("/predictions/all", response_model=list[PredictionRead])
+async def list_all_predictions(db: AsyncSession = Depends(get_db)):
+    return await get_all_predictions(db)
 
 
 @router.post("/predictions", response_model=PredictionRead)

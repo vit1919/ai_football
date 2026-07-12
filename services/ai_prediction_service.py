@@ -4,15 +4,25 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.match import Match
 from models.prediction import Prediction, PredictionSource
 from app.utils import calc_result, get_now_utc
+from app.core.config import settings
 from services.llm_client import call_llm
 from services.prompt_builder import build_prediction_prompt
 
 
 async def generate_ai_prediction(db: AsyncSession, match: Match, model_name: str | None = None) -> Prediction:
+    used_model = model_name or settings.llm_default_model
+
+    exists_stmt = select(Prediction.id).where(
+        Prediction.match_id == match.id,
+        Prediction.source == PredictionSource.LLM,
+        Prediction.model_name == used_model,
+    )
+    exists_result = await db.execute(exists_stmt)
+    if exists_result.scalar_one_or_none():
+        raise ValueError(f"LLM prediction for model '{used_model}' already exists for this match")
+
     prompt = build_prediction_prompt(match)
     response = await call_llm(prompt, model_name)
-
-    used_model = model_name or "gemini-2.0-flash"
 
     prediction = Prediction(
         match_id=match.id,

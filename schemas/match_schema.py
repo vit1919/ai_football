@@ -110,4 +110,12 @@ class MatchSchemaIndexPage(MatchBase):
     home_score: int | None = None
     away_score: int | None = None
 
-    
+
+class MatchComparisonResponse(BaseModel):
+    match: MatchSchema
+    user_prediction: PredictionRead | None = None
+    llm_prediction: PredictionRead | None = None
+    result: str | None = None
+    actual_score: dict | None = None
+    model_name: str | None = None
+

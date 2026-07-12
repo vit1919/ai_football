@@ -28,14 +28,18 @@ async def get_match_comparison(db: AsyncSession, event_id: int, user: User | Non
     for pred in match.predictions:
         if pred.source == PredictionSource.USER and user and pred.user_id == user.id:
             user_prediction = pred
-        elif pred.source == PredictionSource.LLM and llm_prediction is None:
-            llm_prediction = pred
+        elif pred.source == PredictionSource.LLM:
+            if (user_prediction and user_prediction.selected_model
+                    and pred.model_name == user_prediction.selected_model):
+                llm_prediction = pred
+            elif llm_prediction is None:
+                llm_prediction = pred
 
     result_label = None
-    if match.llm_vs_user_result == "win":
-        result_label = "llm_won"
-    elif match.llm_vs_user_result == "loss":
+    if match.llm_vs_user_result == "user_win":
         result_label = "user_won"
+    elif match.llm_vs_user_result == "user_loss":
+        result_label = "llm_won"
     elif match.llm_vs_user_result == "draw":
         result_label = "draw"
 
@@ -44,6 +48,7 @@ async def get_match_comparison(db: AsyncSession, event_id: int, user: User | Non
         "user_prediction": user_prediction,
         "llm_prediction": llm_prediction,
         "result": result_label,
+        "model_name": llm_prediction.model_name if llm_prediction else None,
         "actual_score": {
             "home": match.home_score,
             "away": match.away_score,

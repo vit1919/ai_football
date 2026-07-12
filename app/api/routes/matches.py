@@ -1,32 +1,21 @@
-
-from re import match
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 from app.api.dependencies import get_current_user, get_current_user_optional, get_db
 from services import get_matches_today, save_matches, get_matches, get_match_by_id, get_all_matches, get_user_prediction_for_match, get_match_detail
 from services.comparison_service import get_match_comparison
-from schemas import MatchSchemaIndexPage, MatchSchema, MatchDetailResponse
-from schemas.prediction_schema import PredictionRead
+from schemas import MatchSchemaIndexPage, MatchDetailResponse
+from schemas.match_schema import MatchComparisonResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.utils import get_today_range_utc, get_now_utc
+from app.utils import get_today_range_utc
 from datetime import datetime
-from pydantic import AwareDatetime, BaseModel
-from app.core.constants import TOP5_LEAGUES, MAIN_LEAGUES
+from app.core.constants import MAIN_LEAGUES, FOR_TESTING
 from models import User
 
 router = APIRouter(tags=["matches"])
 
 
-class MatchComparisonResponse(BaseModel):
-    match: MatchSchema
-    user_prediction: PredictionRead | None = None
-    llm_prediction: PredictionRead | None = None
-    result: str | None = None
-    actual_score: dict | None = None
-
 @router.post("/sync_matches", dependencies=[Depends(get_current_user)])
 async def sync_matches(db: AsyncSession = Depends(get_db)) -> dict:
-    matches = await get_matches_today(MAIN_LEAGUES)
+    matches = await get_matches_today(FOR_TESTING)
     stats = await save_matches(db, matches)
 
     return {
@@ -71,6 +60,7 @@ async def compare_predictions(
         llm_prediction=data["llm_prediction"],
         result=data["result"],
         actual_score=data["actual_score"],
+        model_name=data.get("model_name"),
     )
 
 
