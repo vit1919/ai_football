@@ -14,6 +14,7 @@ async def score_predictions(db: AsyncSession) -> dict:
         .options(
             selectinload(Match.predictions).selectinload(Prediction.user)
         )
+        .with_for_update()
         .where(
             Match.completed == True,
             Match.predictions_scored == False
@@ -23,10 +24,7 @@ async def score_predictions(db: AsyncSession) -> dict:
     matches_to_score = result.scalars().unique().all()
 
     if not matches_to_score:
-        return {
-            "matches_scored": 0,
-            "predictions_scored": 0
-        }
+        return {"matches_scored": 0, "predictions_scored": 0}
 
     predictions_scored = 0
     for match in matches_to_score:

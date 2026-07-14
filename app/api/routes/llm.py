@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.dependencies import get_db
@@ -8,6 +9,7 @@ from services.match_service import get_match_by_id
 from app.core.config import settings
 from app.core.constants import AVAILABLE_LLM_MODELS
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/llm", tags=["llm"])
 
 
@@ -31,8 +33,11 @@ async def generate_for_match(
 
     try:
         prediction = await generate_ai_prediction(db, match, model)
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"LLM error: {str(e)}")
+        logger.error("LLM prediction failed for match %s: %s", match_id, e, exc_info=True)
+        raise HTTPException(status_code=500, detail="LLM prediction failed")
 
     return AIPredictionResponse(
         match_id=prediction.match_id,

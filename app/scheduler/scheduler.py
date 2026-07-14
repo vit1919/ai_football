@@ -11,6 +11,7 @@ scheduler.add_job(
     minutes=30,
     id="sync_matches",
     replace_existing=True,
+    max_instances=1,
 )
 
 scheduler.add_job(
@@ -19,6 +20,7 @@ scheduler.add_job(
     minutes=10,
     id="score_predictions",
     replace_existing=True,
+    max_instances=1,
 )
 
 scheduler.add_job(
@@ -27,4 +29,5 @@ scheduler.add_job(
     minutes=5,
     id="generate_ai_predictions",
     replace_existing=True,
+    max_instances=1,
 )

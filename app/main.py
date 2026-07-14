@@ -1,4 +1,4 @@
-
+import logging
 import uvicorn
 from fastapi import FastAPI
 from pathlib import Path
@@ -12,6 +12,13 @@ from app.api.routes.leaderboard import router as leaderboard_router
 from app.api.routes.llm import router as llm_router
 from app.scheduler.scheduler import scheduler
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -20,13 +27,13 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
 
     scheduler.start()
-    print("Scheduler started")
+    logger.info("Scheduler started")
 
     yield
 
     scheduler.shutdown()
 
-    print("Scheduler stopped")
+    logger.info("Scheduler stopped")
    
 
 app = FastAPI(title="AI Football Predictor", lifespan=lifespan)

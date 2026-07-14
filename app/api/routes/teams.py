@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException, Query
 from app.api.dependencies import get_current_user, get_db
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,6 +7,7 @@ from schemas import TeamSchema, FavouriteTeamRead
 from models import User, Team
 from services import get_team_by_id, get_team_info, save_team_to_db, add_favourite_team, delete_favourite_team, get_user_favourite_teams
 
+logger = logging.getLogger(__name__)
 router = APIRouter(tags=["teams"])
 
 @router.get("/teams/{league_slug}/{team_id}", response_model=TeamSchema)
@@ -15,11 +17,11 @@ async def get_team(league_slug: str, team_id: int, db: AsyncSession = Depends(ge
         new_team = await get_team_info(league_slug, team_id)
         if new_team is None:
             raise HTTPException(status_code=404, detail="Team not found")
-        
-        print("FROM ESPN")
+
+        logger.debug("Team %d fetched from ESPN", team_id)
         return await save_team_to_db(db, new_team)
 
-    print("FROM DB")
+    logger.debug("Team %d loaded from DB", team_id)
     return team
 
 

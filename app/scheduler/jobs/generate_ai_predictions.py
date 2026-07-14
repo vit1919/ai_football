@@ -1,5 +1,8 @@
+import logging
 from app.core.database import AsyncSessionLocal
 from services.ai_prediction_service import generate_for_upcoming_matches
+
+logger = logging.getLogger(__name__)
 
 
 async def generate_ai_predictions_job():
@@ -7,6 +10,6 @@ async def generate_ai_predictions_job():
         async with AsyncSessionLocal() as db:
             predictions = await generate_for_upcoming_matches(db)
             if predictions:
-                print(f"Generated {len(predictions)} AI predictions")
+                logger.info("Generated %d AI predictions", len(predictions))
     except Exception as e:
-        print(f"Error generating AI predictions: {e}")
+        logger.error("Error generating AI predictions: %s", e, exc_info=True)

@@ -1,8 +1,11 @@
+import logging
 from datetime import datetime, timedelta, timezone
 import httpx
 import asyncio
 from schemas.team_schema import TeamRead, TeamSchema
 from app.utils import safe_int
+
+logger = logging.getLogger(__name__)
 
 def pick_logo(logos, rel_key):
     for logo in logos or []:
@@ -112,8 +115,8 @@ async def get_team_info(league_slug: str, team_id: int) -> TeamRead | None:
             return extract_team_info(data)
         
         except httpx.HTTPError as e:
-            print(f"HTTP error occurred while fetching team info: {e}")
+            logger.error("HTTP error fetching team info: %s", e)
         except Exception as e:
-            print(f"An error occurred while fetching team info: {e}")
+            logger.error("Error fetching team info: %s", e, exc_info=True)
     return None
 

@@ -1,12 +1,15 @@
+import logging
 from app.core.database import AsyncSessionLocal
 from services import score_predictions
 
+logger = logging.getLogger(__name__)
+
 async def score_predictions_job():
-    try: 
+    try:
         async with AsyncSessionLocal() as db:
             result = await score_predictions(db)
 
-        print(result)
+        logger.info("Score predictions result: %s", result)
 
     except Exception as e:
-        print(f"Error scoring predictions: {e}")
+        logger.error("Error scoring predictions: %s", e, exc_info=True)

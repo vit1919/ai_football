@@ -1,10 +1,14 @@
+import logging
 from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import SQLAlchemyError
 from schemas import MatchSchema, MatchSchemaIndexPage
 from services.prediction_service import get_user_prediction_for_match
 from models import User, Match
+
+logger = logging.getLogger(__name__)
 
 
 async def save_matches(db: AsyncSession, matches: list[MatchSchema]) -> dict:
@@ -22,7 +26,11 @@ async def save_matches(db: AsyncSession, matches: list[MatchSchema]) -> dict:
 
     if new_matches:
         db.add_all(new_matches)
-        await db.commit()
+        try:
+            await db.commit()
+        except SQLAlchemyError:
+            await db.rollback()
+            raise
 
     return {
         'matches_received': len(matches),

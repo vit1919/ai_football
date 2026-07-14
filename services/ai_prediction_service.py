@@ -1,12 +1,16 @@
+import logging
 from datetime import timedelta
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from models.match import Match
 from models.prediction import Prediction, PredictionSource
 from app.utils import calc_result, get_now_utc
 from app.core.config import settings
 from services.llm_client import call_llm
 from services.prompt_builder import build_prediction_prompt
+
+logger = logging.getLogger(__name__)
 
 
 async def generate_ai_prediction(db: AsyncSession, match: Match, model_name: str | None = None) -> Prediction:
@@ -36,14 +40,21 @@ async def generate_ai_prediction(db: AsyncSession, match: Match, model_name: str
 
     db.add(prediction)
     match.ai_predictions_generated = True
-    await db.commit()
+    try:
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        raise ValueError(f"LLM prediction for model '{used_model}' already exists for this match")
+    except SQLAlchemyError:
+        await db.rollback()
+        raise
     await db.refresh(prediction)
     return prediction
 
 
 async def generate_for_upcoming_matches(db: AsyncSession, model_name: str | None = None) -> list[Prediction]:
     now = get_now_utc()
-    cutoff = now + timedelta(minutes=15)
+    cutoff = (now + timedelta(minutes=15)).replace(tzinfo=None)
 
     stmt = select(Match).where(
         Match.date <= cutoff,
@@ -59,6 +70,7 @@ async def generate_for_upcoming_matches(db: AsyncSession, model_name: str | None
             pred = await generate_ai_prediction(db, match, model_name)
             predictions.append(pred)
         except Exception:
+            logger.warning("Failed to generate AI prediction for match %s", match.event_id, exc_info=True)
             await db.rollback()
 
     return predictions

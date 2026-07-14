@@ -4,6 +4,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import Match
 from schemas import MatchSchema
 
+_INTERNAL_FIELDS = {"llm_points_awarded", "llm_vs_user_result"}
+
 async def upsert_matches(db: AsyncSession, matches: list[MatchSchema]) -> dict:
     if not matches:
         return {"matches_received": 0, "added": 0, "updated": 0}
@@ -16,11 +18,12 @@ async def upsert_matches(db: AsyncSession, matches: list[MatchSchema]) -> dict:
     updated = 0
 
     for match in matches:
-        data = match.model_dump(exclude={"id"})  
+        data = match.model_dump(exclude={"id"})
         current = existing.get(match.event_id)
         if current:
             for key, value in data.items():
-                setattr(current, key, value)
+                if key not in _INTERNAL_FIELDS:
+                    setattr(current, key, value)
             updated += 1
         else:
             db.add(Match(**data))

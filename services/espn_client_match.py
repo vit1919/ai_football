@@ -1,8 +1,11 @@
+import logging
 from datetime import datetime, timedelta, timezone
 import httpx
 from schemas.match_schema import MatchSchema
 import asyncio
 from app.utils import safe_int, safe_float
+
+logger = logging.getLogger(__name__)
 
 async def get_matches_today(league_list: list[str]) -> list[MatchSchema]:
     today = datetime.now(timezone.utc)
@@ -39,10 +42,10 @@ async def get_matches_today(league_list: list[str]) -> list[MatchSchema]:
                         matches.append(match)
                         
                 except httpx.RequestError as e:
-                    print(f"Ошибка сети при парсинге {league} за {date}: {e}")
+                    logger.warning("Network error fetching %s for %s: %s", league, date, e)
                     continue
                 except Exception as e:
-                    print(f"Критическая ошибка при обработке {league}: {e}")
+                    logger.error("Critical error processing %s: %s", league, e, exc_info=True)
                     continue
 
                 await asyncio.sleep(0.5)
@@ -240,7 +243,7 @@ def extract_matches(data: dict) -> list[MatchSchema]:
             matches.append(match)
 
         except Exception as e:
-            print(f"ERROR: {e} EVENT: {event.get('id')}")
+            logger.error("Error extracting match %s: %s", event.get('id'), e, exc_info=True)
             continue
 
     return matches

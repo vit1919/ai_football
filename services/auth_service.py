@@ -1,9 +1,13 @@
+import logging
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from models import User
 from pydantic import EmailStr
 from app.core.security import hash_password
 from schemas.user_schema import UserCreate
+
+logger = logging.getLogger(__name__)
 
 async def get_user_by_id(db: AsyncSession, id: int) -> User | None:
     stmt = select(User).where(User.id == id)
@@ -46,7 +50,14 @@ async def create_user(db: AsyncSession, user_data: UserCreate) -> User:
         hashed_password=hash_password(user_data.password)
     )
     db.add(user)
-    await db.commit()
+    try:
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        raise ValueError("User with this email or username already exists")
+    except SQLAlchemyError:
+        await db.rollback()
+        raise
     await db.refresh(user)
 
     return user
