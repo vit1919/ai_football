@@ -32,16 +32,15 @@ async def get_match_comparison(db: AsyncSession, event_id: int, user: User | Non
             if (user_prediction and user_prediction.selected_model
                     and pred.model_name == user_prediction.selected_model):
                 llm_prediction = pred
-            elif llm_prediction is None:
-                llm_prediction = pred
 
     result_label = None
-    if match.llm_vs_user_result == "user_win":
-        result_label = "user_won"
-    elif match.llm_vs_user_result == "user_loss":
-        result_label = "llm_won"
-    elif match.llm_vs_user_result == "draw":
-        result_label = "draw"
+    if user_prediction and user_prediction.user_vs_llm_result:
+        if user_prediction.user_vs_llm_result == "user_win":
+            result_label = "user_won"
+        elif user_prediction.user_vs_llm_result == "user_loss":
+            result_label = "llm_won"
+        elif user_prediction.user_vs_llm_result == "draw":
+            result_label = "draw"
 
     return {
         "match": match,

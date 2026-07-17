@@ -38,6 +38,8 @@ class Prediction(Base):
 
 
     points_awarded: Mapped[int | None] = mapped_column(Integer)
+    user_vs_llm_result: Mapped[str | None] = mapped_column(String)
+    llm_compared_points: Mapped[int | None] = mapped_column(Integer)
     locked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     created_at: Mapped[datetime] = mapped_column(

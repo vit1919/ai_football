@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import Match
 from schemas import MatchSchema
 
-_INTERNAL_FIELDS = {"llm_points_awarded", "llm_vs_user_result"}
+_INTERNAL_FIELDS: set[str] = set()
 
 async def upsert_matches(db: AsyncSession, matches: list[MatchSchema]) -> dict:
     if not matches:

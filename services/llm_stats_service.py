@@ -29,35 +29,50 @@ async def get_llm_stats(db: AsyncSession) -> dict:
     exact_scores = sum(1 for p in predictions if p.points_awarded and p.points_awarded >= 5)
     total_points = sum(p.points_awarded or 0 for p in predictions)
 
+    # LLM wins = user predictions where user_vs_llm_result == "user_loss"
+    # LLM draws = user predictions where user_vs_llm_result == "draw"
+    # LLM losses = user predictions where user_vs_llm_result == "user_win"
+    user_stmt = select(Prediction).where(
+        Prediction.source == PredictionSource.USER,
+        Prediction.is_scored == True,
+        Prediction.user_vs_llm_result.isnot(None),
+    )
+    user_result = await db.execute(user_stmt)
+    user_predictions = user_result.scalars().all()
+
+    llm_wins = sum(1 for p in user_predictions if p.user_vs_llm_result == "user_loss")
+    llm_draws = sum(1 for p in user_predictions if p.user_vs_llm_result == "draw")
+    llm_losses = sum(1 for p in user_predictions if p.user_vs_llm_result == "user_win")
+
     return {
         "total_predictions": total,
         "correct_results": correct_results,
         "correct_goal_diff": correct_goal_diff,
         "exact_scores": exact_scores,
         "avg_points": round(total_points / total, 2) if total > 0 else 0.0,
-        "wins": 0,
-        "draws": 0,
-        "losses": 0,
+        "wins": llm_wins,
+        "draws": llm_draws,
+        "losses": llm_losses,
     }
 
 
 async def get_llm_vs_user_stats(db: AsyncSession) -> dict:
-    from models.match import Match
+    stmt = select(
+        Prediction.user_vs_llm_result,
+        func.count(Prediction.id),
+    ).where(
+        Prediction.source == PredictionSource.USER,
+        Prediction.is_scored == True,
+        Prediction.user_vs_llm_result.isnot(None),
+    ).group_by(Prediction.user_vs_llm_result)
 
-    stmt = select(Match).where(
-        Match.predictions_scored == True,
-        Match.llm_vs_user_result.isnot(None),
-    )
     result = await db.execute(stmt)
-    matches = result.scalars().all()
-
-    wins = sum(1 for m in matches if m.llm_vs_user_result == "user_win")
-    draws = sum(1 for m in matches if m.llm_vs_user_result == "draw")
-    losses = sum(1 for m in matches if m.llm_vs_user_result == "user_loss")
+    rows = result.all()
+    stats = {row[0]: row[1] for row in rows}
 
     return {
-        "wins": wins,
-        "draws": draws,
-        "losses": losses,
-        "total_compared": len(matches),
+        "wins": stats.get("user_win", 0),
+        "draws": stats.get("draw", 0),
+        "losses": stats.get("user_loss", 0),
+        "total_compared": sum(stats.values()),
     }

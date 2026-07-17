@@ -25,6 +25,8 @@ class PredictionRead(PredictionBase):
     model_id: int | None = None
     confidence: float | None = None
     locked_at: datetime | None = None
+    user_vs_llm_result: str | None = None
+    llm_compared_points: int | None = None
     created_at: datetime
     updated_at: datetime
     
