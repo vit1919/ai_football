@@ -27,6 +27,9 @@ class PredictionRead(PredictionBase):
     locked_at: datetime | None = None
     user_vs_llm_result: str | None = None
     llm_compared_points: int | None = None
+    points_awarded: int | None = None
+    is_scored: bool = False
+    scored_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
     

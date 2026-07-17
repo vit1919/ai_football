@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import Match
 from schemas import MatchSchema
 
-_INTERNAL_FIELDS: set[str] = set()
+_INTERNAL_FIELDS: set[str] = {"predictions_scored", "ai_predictions_generated", "lineups_fetched"}
 
 async def upsert_matches(db: AsyncSession, matches: list[MatchSchema]) -> dict:
     if not matches:
