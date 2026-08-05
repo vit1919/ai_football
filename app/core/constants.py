@@ -1,9 +1,9 @@
 TOP5_LEAGUES = [
     'eng.1',
-    # 'esp.1',
-    # 'ita.1',
-    # 'ger.1',
-    # 'fra.1'
+    'esp.1',
+    'ita.1',
+    'ger.1',
+    'fra.1'
     ]
 
 MAIN_LEAGUES = TOP5_LEAGUES + [
@@ -38,10 +38,13 @@ CUPS_AND_SUPER_CUPS = [
 FOR_TESTING = [
     "fifa.world",
     "nonfifa",
-    "usa.usl.1"
+    "usa.usl.1",
+    "uefa.champions_qual",
+    "uefa.europa_qual",
+    "uefa.europa.conf_qual",
 ]
 
 AVAILABLE_LLM_MODELS = [
-    {"name": "gemini-2.0-flash", "provider": "google"},
+    {"name": "gemini-3.5-flash-lite", "provider": "google"},
     {"name": "gemini-2.0-pro", "provider": "google"},
 ]

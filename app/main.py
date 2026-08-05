@@ -10,6 +10,7 @@ from app.api.routes.predictions import router as predictions_router
 from app.api.routes.teams import router as teams
 from app.api.routes.leaderboard import router as leaderboard_router
 from app.api.routes.llm import router as llm_router
+from app.api.routes.standings import router as standings_router
 from app.scheduler.scheduler import scheduler
 
 logging.basicConfig(
@@ -43,6 +44,7 @@ app.include_router(predictions_router)
 app.include_router(teams)
 app.include_router(leaderboard_router)
 app.include_router(llm_router)
+app.include_router(standings_router)
 
 @app.get("/health")
 async def health_check():

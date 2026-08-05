@@ -14,7 +14,6 @@ async def score_predictions(db: AsyncSession) -> dict:
         .options(
             selectinload(Match.predictions).selectinload(Prediction.user)
         )
-        .with_for_update()
         .where(
             Match.completed == True,
             Match.predictions_scored == False

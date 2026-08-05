@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from datetime import timedelta
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,9 +16,10 @@ logger = logging.getLogger(__name__)
 
 async def generate_ai_prediction(db: AsyncSession, match: Match, model_name: str | None = None) -> Prediction:
     used_model = model_name or settings.llm_default_model
+    match_id = match.id  
 
     exists_stmt = select(Prediction.id).where(
-        Prediction.match_id == match.id,
+        Prediction.match_id == match_id,
         Prediction.source == PredictionSource.LLM,
         Prediction.model_name == used_model,
     )
@@ -29,7 +31,7 @@ async def generate_ai_prediction(db: AsyncSession, match: Match, model_name: str
     response = await call_llm(prompt, model_name)
 
     prediction = Prediction(
-        match_id=match.id,
+        match_id=match_id,
         source=PredictionSource.LLM,
         model_name=used_model,
         score_home=response["score_home"],
@@ -54,7 +56,7 @@ async def generate_ai_prediction(db: AsyncSession, match: Match, model_name: str
 
 async def generate_for_upcoming_matches(db: AsyncSession, model_name: str | None = None) -> list[Prediction]:
     now = get_now_utc()
-    cutoff = (now + timedelta(minutes=15)).replace(tzinfo=None)
+    cutoff = now + timedelta(minutes=15)
 
     stmt = select(Match).where(
         Match.date <= cutoff,
@@ -66,11 +68,16 @@ async def generate_for_upcoming_matches(db: AsyncSession, model_name: str | None
 
     predictions = []
     for match in matches:
+        match_event_id = match.event_id
+
         try:
             pred = await generate_ai_prediction(db, match, model_name)
             predictions.append(pred)
+
+            await asyncio.sleep(5)
+
         except Exception:
-            logger.warning("Failed to generate AI prediction for match %s", match.event_id, exc_info=True)
             await db.rollback()
+            logger.warning("Failed to generate AI prediction for match %s", match_event_id, exc_info=True)
 
     return predictions
