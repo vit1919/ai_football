@@ -59,6 +59,7 @@ async def generate_for_upcoming_matches(db: AsyncSession, model_name: str | None
     cutoff = now + timedelta(minutes=15)
 
     stmt = select(Match).where(
+        Match.date >= now,
         Match.date <= cutoff,
         Match.completed == False,
         Match.ai_predictions_generated == False,

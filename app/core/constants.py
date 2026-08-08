@@ -42,6 +42,7 @@ FOR_TESTING = [
     "uefa.champions_qual",
     "uefa.europa_qual",
     "uefa.europa.conf_qual",
+    "eng.league_cup",
 ]
 
 AVAILABLE_LLM_MODELS = [

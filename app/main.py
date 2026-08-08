@@ -12,6 +12,7 @@ from app.api.routes.leaderboard import router as leaderboard_router
 from app.api.routes.llm import router as llm_router
 from app.api.routes.standings import router as standings_router
 from app.scheduler.scheduler import scheduler
+from fastapi.middleware.cors import CORSMiddleware
 
 logging.basicConfig(
     level=logging.INFO,
@@ -38,6 +39,20 @@ async def lifespan(app: FastAPI):
    
 
 app = FastAPI(title="AI Football Predictor", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",   
+        "http://localhost:3000",   
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(today_matches_router)
 app.include_router(auth)
 app.include_router(predictions_router)

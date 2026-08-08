@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, computed_field
 from datetime import datetime, timezone
 from app.utils import get_now_utc
 from models.prediction import Result, PredictionSource
+from schemas.match_schema import MatchSchemaIndexPage
 
 class PredictionBase(BaseModel):
     match_id: int
@@ -51,3 +52,6 @@ class PredictionUpdate(BaseModel):
     score_away: int | None = Field(default=None, ge=0)
     confidence: float | None = None
     predicted_mvp: str | None = None
+
+class PredictionWithMatchRead(PredictionRead):
+    match: MatchSchemaIndexPage

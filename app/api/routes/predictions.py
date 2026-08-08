@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 from schemas import PredictionCreateUser, PredictionRead
 from models import User
+from schemas.prediction_schema import PredictionWithMatchRead
 from services import create_prediction, get_user_predictions, update_user_prediction, delete_user_prediction, get_user_prediction_for_match, get_all_predictions
 
 router = APIRouter(tags=["predictions"])
@@ -25,7 +26,7 @@ async def prediction_from_user(
     return user_prediction
 
 
-@router.get("/predictions/me", response_model=list[PredictionRead])
+@router.get("/predictions/me", response_model=list[PredictionWithMatchRead])
 async def get_user_prediction(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     return await get_user_predictions(db, current_user)
 

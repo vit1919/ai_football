@@ -1,3 +1,5 @@
+from sqlalchemy.orm import selectinload
+
 from app.utils import get_now_utc, ensure_utc
 from fastapi import HTTPException
 from models import Prediction, User, Match
@@ -55,9 +57,13 @@ async def create_prediction(db: AsyncSession, current_user: User, data: Predicti
 
 
 async def get_user_predictions(db: AsyncSession, current_user: User) -> list[Prediction]:
-    stmt = (select(Prediction).where(Prediction.user_id == current_user.id).order_by(Prediction.created_at.desc()))
+    stmt = (
+        select(Prediction)
+        .options(selectinload(Prediction.match))  
+        .where(Prediction.user_id == current_user.id)
+        .order_by(Prediction.created_at.desc())
+    )
     result = await db.execute(stmt)
-    
     return result.scalars().all()
 
 async def update_user_prediction(db: AsyncSession, current_user: User, prediction_id: int, data: PredictionUpdate) -> Prediction:
