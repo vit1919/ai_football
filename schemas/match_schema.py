@@ -86,10 +86,6 @@ class MatchSchema(MatchBase):
     stats_url: str | None = None
     highlights_url: str | None = None
 
-class MatchDetailResponse(BaseModel):
-    match: MatchSchema
-    user_prediction: PredictionRead | None = None
-
 class MatchSchemaIndexPage(MatchBase):
     id: int
     venue_id : int | None = None
@@ -107,6 +103,9 @@ class MatchSchemaIndexPage(MatchBase):
     home_score: int | None = None
     away_score: int | None = None
 
+class MatchDetailResponse(BaseModel):
+    match: MatchSchema
+    user_prediction: PredictionRead | None = None
 
 class MatchComparisonResponse(BaseModel):
     match: MatchSchema

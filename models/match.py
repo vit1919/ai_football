@@ -82,7 +82,6 @@ class Match(Base):
     highlights_url: Mapped[str | None] = mapped_column(String)
 
     lineups_fetched: Mapped[bool] = mapped_column(Boolean, default=False)
-    ai_predictions_generated: Mapped[bool] = mapped_column(Boolean, default=False)
     predictions_scored: Mapped[bool] = mapped_column(Boolean, default=False)
 
     created_at: Mapped[datetime] = mapped_column(

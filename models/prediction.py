@@ -64,4 +64,10 @@ class Prediction(Base):
         "match_id",
         name="uq_user_match_prediction"
     ),
+    UniqueConstraint(
+        "match_id", 
+        "source", 
+        "model_name", 
+        name="uq_match_source_model_prediction"
+    ),
 )

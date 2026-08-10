@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field, computed_field
 from datetime import datetime, timezone
 from app.utils import get_now_utc
 from models.prediction import Result, PredictionSource
-from schemas.match_schema import MatchSchemaIndexPage
 
 class PredictionBase(BaseModel):
     match_id: int
@@ -16,7 +15,7 @@ class PredictionCreateLLM(PredictionBase):
 
 class PredictionCreateUser(PredictionBase):
     selected_model: str | None = None
-    
+
 class PredictionRead(PredictionBase):
     id: int
     user_id: int | None = None
@@ -53,5 +52,44 @@ class PredictionUpdate(BaseModel):
     confidence: float | None = None
     predicted_mvp: str | None = None
 
+
+class PredictionMatchRead(BaseModel):
+    league_id: int
+    league_name: str | None = None
+    league_slug: str
+    year: int
+
+    event_id: int
+    date: datetime
+    state: str
+    completed: bool
+
+    home_team_id: int
+    home_team_name: str
+
+    home_team_form: str | None = None
+    home_team_record: str | None = None
+    home_team_logo: str | None = None
+
+    away_team_id: int
+    away_team_name: str
+
+    away_team_form: str | None = None
+    away_team_record: str | None = None
+    away_team_logo: str | None = None
+
+    venue_id: int | None = None
+    venue_name: str | None = None
+
+    winner: str | None = None
+    home_score: int | None = None
+    away_score: int | None = None
+
+    model_config = {
+        "from_attributes": True,
+    }
+
 class PredictionWithMatchRead(PredictionRead):
-    match: MatchSchemaIndexPage
+    match: PredictionMatchRead
+
+
