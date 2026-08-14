@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field, model_validator
 from datetime import datetime, timezone
 from app.utils import get_now_utc
 from models.prediction import Result, PredictionSource
@@ -15,6 +15,14 @@ class PredictionCreateLLM(PredictionBase):
 
 class PredictionCreateUser(PredictionBase):
     selected_model: str | None = None
+    model_name: str | None = None
+
+    @model_validator(mode="before")
+    def sync_model_fields(cls, values):
+        if isinstance(values, dict):
+            if not values.get("selected_model") and values.get("model_name"):
+                values["selected_model"] = values["model_name"]
+        return values
 
 class PredictionRead(PredictionBase):
     id: int

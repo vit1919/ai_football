@@ -36,13 +36,13 @@ CUPS_AND_SUPER_CUPS = [
 ]
 
 FOR_TESTING = [
-    "fifa.world",
-    "nonfifa",
-    "usa.usl.1",
+    "usa.1",
     "uefa.champions_qual",
     "uefa.europa_qual",
     "uefa.europa.conf_qual",
     "eng.league_cup",
+    "esp.1",
+    "eng.2",
 ]
 
 AVAILABLE_LLM_MODELS = [

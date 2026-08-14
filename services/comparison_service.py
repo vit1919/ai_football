@@ -23,15 +23,25 @@ async def get_match_comparison(db: AsyncSession, event_id: int, user: User | Non
         raise HTTPException(status_code=400, detail="Match not completed yet")
 
     user_prediction = None
-    llm_prediction = None
+    if user:
+        user_prediction = next(
+            (p for p in match.predictions if p.source == PredictionSource.USER and p.user_id == user.id),
+            None
+        )
 
-    for pred in match.predictions:
-        if pred.source == PredictionSource.USER and user and pred.user_id == user.id:
-            user_prediction = pred
-        elif pred.source == PredictionSource.LLM:
-            if (user_prediction and user_prediction.selected_model
-                    and pred.model_name == user_prediction.selected_model):
-                llm_prediction = pred
+    llm_prediction = None
+    target_model = user_prediction.selected_model if (user_prediction and user_prediction.selected_model) else None
+
+    if target_model:
+        llm_prediction = next(
+            (p for p in match.predictions if p.source == PredictionSource.LLM and p.model_name == target_model),
+            None
+        )
+    else:
+        llm_prediction = next(
+            (p for p in match.predictions if p.source == PredictionSource.LLM),
+            None
+        )
 
     result_label = None
     if user_prediction and user_prediction.user_vs_llm_result:
@@ -47,7 +57,7 @@ async def get_match_comparison(db: AsyncSession, event_id: int, user: User | Non
         "user_prediction": user_prediction,
         "llm_prediction": llm_prediction,
         "result": result_label,
-        "model_name": llm_prediction.model_name if llm_prediction else None,
+        "model_name": llm_prediction.model_name if llm_prediction else (target_model or "AI Model"),
         "actual_score": {
             "home": match.home_score,
             "away": match.away_score,
