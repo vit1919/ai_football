@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: football_api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./football_predictions.db:/app/football_predictions.db
+    restart: always
+
+  frontend:
+    build: ../ai_football_front
+    container_name: football_ui
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always

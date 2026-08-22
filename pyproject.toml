@@ -19,3 +19,5 @@ dependencies = [
     "soccerdata>=1.9.0",
     "sqlalchemy>=2.0.48",
 ]
+[tool.setuptools]
+packages = ["app", "models", "schemas", "services"]
