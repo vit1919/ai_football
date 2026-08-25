@@ -1,13 +1,15 @@
-import logging
 import asyncio
+import logging
 from datetime import timedelta
+
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.config import settings
+from app.utils import calc_result, get_now_utc
 from models.match import Match
 from models.prediction import Prediction, PredictionSource
-from app.utils import calc_result, get_now_utc
-from app.core.config import settings
 from services.llm_client import call_llm
 from services.prompt_builder import build_prediction_prompt
 

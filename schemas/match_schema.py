@@ -1,7 +1,9 @@
+from datetime import datetime
+
 from pydantic import BaseModel
-from datetime import datetime, timezone
-from pydantic import AwareDatetime
+
 from .prediction_schema import PredictionRead
+
 
 class MatchBase(BaseModel):
     league_id : int

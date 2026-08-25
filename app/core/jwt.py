@@ -1,9 +1,12 @@
 from datetime import timedelta
+
 import jwt
 from fastapi import HTTPException
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+
 from app.core.config import settings
 from app.utils import get_now_utc
+
 
 def create_access_token(user_id: int) -> str:
     now = get_now_utc()

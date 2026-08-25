@@ -1,10 +1,21 @@
-from datetime import datetime, timezone
 import enum
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.core.database import Base
-from sqlalchemy import Enum
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
+
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.core.database import Base
+
 if TYPE_CHECKING:
     from .match import Match
     from .user import User
@@ -44,12 +55,12 @@ class Prediction(Base):
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC)
     )
     is_scored: Mapped[bool] = mapped_column(Boolean,default=False)
     scored_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

@@ -1,6 +1,8 @@
-from datetime import datetime
-from pydantic import BaseModel, EmailStr, AwareDatetime, Field, field_validator
 import re
+from datetime import datetime
+
+from pydantic import BaseModel, EmailStr, Field, field_validator
+
 
 class UserBase(BaseModel):
     username: str = Field(min_length=3, max_length=50)

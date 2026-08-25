@@ -1,7 +1,8 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from .jobs.sync_matches import sync_matches_job
-from .jobs.score_predictions import score_predictions_job
+
 from .jobs.generate_ai_predictions import generate_ai_predictions_job
+from .jobs.score_predictions import score_predictions_job
+from .jobs.sync_matches import sync_matches_job
 from .jobs.sync_standings import sync_standings_job
 
 scheduler = AsyncIOScheduler()

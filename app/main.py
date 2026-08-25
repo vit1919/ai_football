@@ -1,18 +1,20 @@
 import logging
+from contextlib import asynccontextmanager
+from pathlib import Path
+
 import uvicorn
 from fastapi import FastAPI
-from pathlib import Path
-from contextlib import asynccontextmanager
-from app.core.database import engine, Base
-from app.api.routes.matches import router as today_matches_router
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.api.routes.auth import router as auth
-from app.api.routes.predictions import router as predictions_router
-from app.api.routes.teams import router as teams
 from app.api.routes.leaderboard import router as leaderboard_router
 from app.api.routes.llm import router as llm_router
+from app.api.routes.matches import router as today_matches_router
+from app.api.routes.predictions import router as predictions_router
 from app.api.routes.standings import router as standings_router
+from app.api.routes.teams import router as teams
+from app.core.database import Base, engine
 from app.scheduler.scheduler import scheduler
-from fastapi.middleware.cors import CORSMiddleware
 
 logging.basicConfig(
     level=logging.INFO,

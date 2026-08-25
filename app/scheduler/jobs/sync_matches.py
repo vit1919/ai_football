@@ -1,7 +1,8 @@
 import logging
-from services import get_matches_today, upsert_matches
+
+from app.core.constants import FOR_TESTING
 from app.core.database import AsyncSessionLocal
-from app.core.constants import TOP5_LEAGUES, MAIN_LEAGUES, FOR_TESTING
+from services import get_matches_today, upsert_matches
 
 logger = logging.getLogger(__name__)
 

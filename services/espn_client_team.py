@@ -1,9 +1,14 @@
 import logging
-from datetime import datetime, timedelta, timezone
+
 import httpx
-import asyncio
+
+from app.utils import (
+    extract_next_event_team,
+    extract_record_stats_team,
+    pick_logo,
+    safe_int,
+)
 from schemas.team_schema import TeamRead, TeamSchema
-from app.utils import safe_int, safe_float, pick_logo, extract_record_stats_team, extract_next_event_team
 
 logger = logging.getLogger(__name__)
 

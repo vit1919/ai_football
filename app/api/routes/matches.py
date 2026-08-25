@@ -1,14 +1,22 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from app.api.dependencies import get_current_user, get_current_user_optional, get_db
-from services import get_matches_today, save_matches, get_matches, get_match_by_id, get_all_matches, get_user_prediction_for_match, get_match_detail
-from services.comparison_service import get_match_comparison
-from schemas import MatchSchemaIndexPage, MatchDetailResponse
-from schemas.match_schema import MatchComparisonResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.utils import get_today_range_utc
 from datetime import datetime
-from app.core.constants import MAIN_LEAGUES, FOR_TESTING
+
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.api.dependencies import get_current_user, get_current_user_optional, get_db
+from app.core.constants import FOR_TESTING
+from app.utils import get_today_range_utc
 from models import User
+from schemas import MatchDetailResponse, MatchSchemaIndexPage
+from schemas.match_schema import MatchComparisonResponse
+from services import (
+    get_all_matches,
+    get_match_detail,
+    get_matches,
+    get_matches_today,
+    save_matches,
+)
+from services.comparison_service import get_match_comparison
 
 router = APIRouter(tags=["matches"])
 

@@ -1,5 +1,6 @@
 from models.match import Match
 
+
 def build_prediction_prompt(match: Match) -> str:
     odds_section = _build_odds_section(match)
 

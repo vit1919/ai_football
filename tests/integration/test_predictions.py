@@ -1,12 +1,14 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from models.match import Match
 
 
 async def seed_upcoming_match(db: AsyncSession) -> Match:
-    future_date = datetime.now(timezone.utc) + timedelta(hours=2)
+    future_date = datetime.now(UTC) + timedelta(hours=2)
     match = Match(
         league_id=1,
         league_slug="test_league",

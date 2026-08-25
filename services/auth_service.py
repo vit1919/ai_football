@@ -1,10 +1,12 @@
 import logging
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from models import User
+
 from pydantic import EmailStr
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.security import hash_password
+from models import User
 from schemas.user_schema import UserCreate
 
 logger = logging.getLogger(__name__)

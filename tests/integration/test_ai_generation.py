@@ -1,10 +1,12 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import AsyncMock, patch
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from models.match import Match
-from models.prediction import Prediction, PredictionSource
+from models.prediction import PredictionSource
 from services.ai_prediction_service import generate_for_upcoming_matches
 
 
@@ -23,7 +25,7 @@ async def test_generate_ai_predictions_job_success(mock_call_llm, db_session: As
         league_slug="test_league",
         year=2026,
         event_id=777111,
-        date=datetime.now(timezone.utc) + timedelta(minutes=10),
+        date=datetime.now(UTC) + timedelta(minutes=10),
         state="pre",
         completed=False,
         home_team_id=1,
@@ -61,7 +63,7 @@ async def test_generate_ai_prediction_manual_api(mock_call_llm, async_client: As
         league_slug="test_league",
         year=2026,
         event_id=777222,
-        date=datetime.now(timezone.utc) + timedelta(hours=5),
+        date=datetime.now(UTC) + timedelta(hours=5),
         state="pre",
         completed=False,
         home_team_id=1,

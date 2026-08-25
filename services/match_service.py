@@ -1,12 +1,14 @@
 import logging
 from datetime import datetime
+
 from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
-from schemas import MatchSchema, MatchSchemaIndexPage
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models import Match, User
+from schemas import MatchSchema
 from services.prediction_service import get_user_prediction_for_match
-from models import User, Match
 
 logger = logging.getLogger(__name__)
 

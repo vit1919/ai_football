@@ -1,14 +1,16 @@
-import logging
-from datetime import datetime, timedelta, timezone
-import httpx
-from schemas.match_schema import MatchSchema
 import asyncio
-from app.utils import safe_int, safe_float
+import logging
+from datetime import UTC, datetime, timedelta
+
+import httpx
+
+from app.utils import safe_float, safe_int
+from schemas.match_schema import MatchSchema
 
 logger = logging.getLogger(__name__)
 
 async def get_matches_today(league_list: list[str]) -> list[MatchSchema]:
-    today = datetime.now(timezone.utc)
+    today = datetime.now(UTC)
     yesterday = today - timedelta(days=1)
     tomorrow = today + timedelta(days=1)
 
@@ -103,9 +105,9 @@ def extract_matches(data: dict) -> list[MatchSchema]:
                 home_score = int(home_team["score"]) if "score" in home_team else None
                 away_score = int(away_team["score"]) if "score" in away_team else None
 
-                if "winner" in home_team and home_team["winner"]:
+                if home_team.get("winner"):
                     winner = "home"
-                elif "winner" in away_team and away_team["winner"]:
+                elif away_team.get("winner"):
                     winner = "away"
                 elif home_score is not None and away_score is not None and home_score == away_score:
                     winner = "draw"

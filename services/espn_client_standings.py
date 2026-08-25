@@ -1,7 +1,9 @@
 import logging
+
 import httpx
-from schemas.standing_schema import StandingSchema
+
 from app.utils import safe_int
+from schemas.standing_schema import StandingSchema
 
 logger = logging.getLogger(__name__)
 

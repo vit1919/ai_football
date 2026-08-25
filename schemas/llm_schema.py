@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class LLMModelRead(BaseModel):
     name: str
     provider: str

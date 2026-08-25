@@ -1,7 +1,8 @@
 import logging
-from services import sync_standings_batch
-from app.core.database import AsyncSessionLocal
+
 from app.core.constants import FOR_TESTING
+from app.core.database import AsyncSessionLocal
+from services import sync_standings_batch
 
 logger = logging.getLogger(__name__)
 

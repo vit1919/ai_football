@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.api.dependencies import get_db
 from schemas.user_schema import LeaderboardEntry
 from services.leaderboard_service import get_leaderboard

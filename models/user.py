@@ -1,9 +1,13 @@
-from sqlalchemy import Boolean, DateTime, Float, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.core.database import Base
-from datetime import datetime, timezone
-from .prediction import Prediction
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
+
+from sqlalchemy import Boolean, DateTime, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.core.database import Base
+
+from .prediction import Prediction
+
 if TYPE_CHECKING:
     from .favourite_team import FavouriteTeam
 
@@ -19,12 +23,12 @@ class User(Base):
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.now(UTC)
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC)
     )
 
     predictions: Mapped[list["Prediction"]] = relationship(back_populates="user", cascade="all, delete-orphan")

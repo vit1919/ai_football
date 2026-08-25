@@ -1,11 +1,19 @@
 import logging
-from fastapi import APIRouter, Depends, HTTPException, Query
-from app.api.dependencies import get_current_user, get_db
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime
-from schemas import TeamSchema, FavouriteTeamRead
-from models import User, Team
-from services import get_team_by_id, get_team_info, save_team_to_db, add_favourite_team, delete_favourite_team, get_user_favourite_teams
+
+from app.api.dependencies import get_current_user, get_db
+from models import User
+from schemas import FavouriteTeamRead, TeamSchema
+from services import (
+    add_favourite_team,
+    delete_favourite_team,
+    get_team_by_id,
+    get_team_info,
+    get_user_favourite_teams,
+    save_team_to_db,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["teams"])

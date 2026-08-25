@@ -1,12 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from app.api.dependencies import get_current_user, get_db
-from schemas import PredictionUpdate, PredictionRead
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime
-from schemas import PredictionCreateUser, PredictionRead
+
+from app.api.dependencies import get_current_user, get_db
 from models import User
+from schemas import PredictionCreateUser, PredictionRead, PredictionUpdate
 from schemas.prediction_schema import PredictionWithMatchRead
-from services import create_prediction, get_user_predictions, update_user_prediction, delete_user_prediction, get_user_prediction_for_match, get_all_predictions
+from services import (
+    create_prediction,
+    delete_user_prediction,
+    get_all_predictions,
+    get_user_predictions,
+    update_user_prediction,
+)
 
 router = APIRouter(tags=["predictions"])
 

@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+
 import pytest
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from models.match import Match
 from models.prediction import Prediction, PredictionSource, Result
 from models.user import User
@@ -14,7 +15,7 @@ async def create_completed_match(db: AsyncSession, home_score: int = 2, away_sco
         league_slug="test_league",
         year=2026,
         event_id=888888,
-        date=datetime.now(timezone.utc) - timedelta(hours=3),
+        date=datetime.now(UTC) - timedelta(hours=3),
         state="post",
         completed=True,
         home_team_id=101,

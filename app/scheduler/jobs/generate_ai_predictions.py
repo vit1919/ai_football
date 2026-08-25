@@ -1,4 +1,5 @@
 import logging
+
 from app.core.database import AsyncSessionLocal
 from services.ai_prediction_service import generate_for_upcoming_matches
 

@@ -1,11 +1,13 @@
 
 from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
+from models import FavouriteTeam, Team, User
 from schemas import TeamSchema
-from models import Team, User, FavouriteTeam
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+
 
 async def get_team_by_id(db: AsyncSession, team_id: int) -> Team | None:
     stmt = select(Team).where(Team.espn_id == team_id)
@@ -54,7 +56,7 @@ async def add_favourite_team(db: AsyncSession, user: User, team: Team) -> Favour
     db.add(fav_team)
     try:
         await db.commit()
-    except IntegrityError as e:
+    except IntegrityError:
         await db.rollback()
         raise HTTPException(status_code=409, detail="Team already favourited")
     except SQLAlchemyError:

@@ -1,13 +1,14 @@
-from datetime import datetime, timezone
-from sqlalchemy import Boolean, DateTime, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.core.database import Base
-from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy import Integer
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
+
+from sqlalchemy import DateTime, ForeignKey, Integer, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.core.database import Base
+
 if TYPE_CHECKING:
-    from .user import User
     from .team import Team
+    from .user import User
 
 
 class FavouriteTeam(Base):
@@ -16,7 +17,7 @@ class FavouriteTeam(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True, nullable=False)
     team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"), index=True, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
     user: Mapped["User"] = relationship(back_populates="favourite_teams")
     team: Mapped["Team"] = relationship(back_populates="favourite_teams")

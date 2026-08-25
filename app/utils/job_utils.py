@@ -1,5 +1,6 @@
-from models import Prediction, Match
+from models import Match, Prediction
 from models.prediction import Result
+
 
 def calc_result(home_score: int, away_score: int) -> Result:
     if home_score > away_score:

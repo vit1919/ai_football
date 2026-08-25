@@ -1,7 +1,9 @@
 import json
 import logging
+
 from google import genai
 from google.genai import errors as genai_errors
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -30,8 +32,7 @@ async def call_llm(prompt: str, model_name: str | None = None) -> dict:
 
     if text.startswith("```"):
         text = text.split("\n", 1)[1]
-        if text.endswith("```"):
-            text = text[:-3]
+        text = text.removesuffix("```")
         text = text.strip()
 
     logger.debug("LLM raw response: %s", repr(text)[:200])

@@ -1,4 +1,5 @@
 import logging
+
 from app.core.database import AsyncSessionLocal
 from services import score_predictions
 

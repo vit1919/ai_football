@@ -1,14 +1,13 @@
+from fastapi import HTTPException
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.utils import get_now_utc, ensure_utc
-from fastapi import HTTPException
-from models import Prediction, User, Match
+from app.utils import calc_result, ensure_utc, get_now_utc
+from models import Match, Prediction, User
 from models.prediction import PredictionSource
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from schemas import PredictionCreateUser, PredictionRead, PredictionUpdate
-from sqlalchemy.exc import IntegrityError
-from app.utils import calc_result
+from schemas import PredictionCreateUser, PredictionUpdate
 
 
 async def create_prediction(db: AsyncSession, current_user: User, data: PredictionCreateUser) -> Prediction:

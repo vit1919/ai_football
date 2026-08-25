@@ -1,11 +1,13 @@
-import pytest
 from unittest.mock import patch
-from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
-from schemas.team_schema import TeamSchema
+import pytest
+from httpx import AsyncClient
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from models.team import Team
+from schemas.team_schema import TeamSchema
+
 
 @pytest.mark.asyncio
 @patch("app.api.routes.teams.get_team_info")

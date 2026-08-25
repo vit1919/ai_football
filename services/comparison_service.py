@@ -1,9 +1,10 @@
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from fastapi import HTTPException
+
 from models.match import Match
-from models.prediction import Prediction, PredictionSource
+from models.prediction import PredictionSource
 from models.user import User
 
 

@@ -1,13 +1,17 @@
+from datetime import datetime
+
 from pydantic import BaseModel
-from datetime import datetime, timezone
-from schemas import TeamRead
+
+from schemas.team_schema import TeamRead
+
 
 class FavouriteTeamBase(BaseModel):
-    team_id : int
+    team_id: int
+
 
 class FavouriteTeamRead(FavouriteTeamBase):
     id: int
-    team: TeamRead 
+    team: TeamRead
     created_at: datetime | None
 
     model_config = {"from_attributes": True}

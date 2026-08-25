@@ -1,7 +1,7 @@
-import pytest
 from app.utils.job_utils import calc_result, calculate_prediction_points
 from models.match import Match
 from models.prediction import Prediction, Result
+
 
 def test_calc_result():
     assert calc_result(3, 1) == Result.HOME_WIN

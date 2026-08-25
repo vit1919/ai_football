@@ -1,9 +1,10 @@
+from datetime import UTC, datetime, timedelta
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from models.match import Match
-from models.user import User
-from datetime import datetime, timezone, timedelta
 from services.jobs_service import score_predictions
 
 
@@ -23,7 +24,7 @@ async def test_full_user_and_prediction_lifecycle(async_client: AsyncClient, db_
 
     match = Match(
         league_id=1, league_slug="e2e_league", year=2026, event_id=555111,
-        date=datetime.now(timezone.utc) + timedelta(hours=2),
+        date=datetime.now(UTC) + timedelta(hours=2),
         state="pre", completed=False,
         home_team_id=1, home_team_name="Real",
         away_team_id=2, away_team_name="Barca"

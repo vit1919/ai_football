@@ -1,7 +1,10 @@
+from datetime import UTC, datetime
+
 from pydantic import BaseModel, Field, computed_field, model_validator
-from datetime import datetime, timezone
+
 from app.utils import get_now_utc
-from models.prediction import Result, PredictionSource
+from models.prediction import PredictionSource, Result
+
 
 class PredictionBase(BaseModel):
     match_id: int
@@ -51,7 +54,7 @@ class PredictionRead(PredictionBase):
             return False
         locked_at = self.locked_at
         if locked_at.tzinfo is None:
-            locked_at = locked_at.replace(tzinfo=timezone.utc)
+            locked_at = locked_at.replace(tzinfo=UTC)
         return locked_at <= get_now_utc()
 
 class PredictionUpdate(BaseModel):

@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.api.dependencies import get_db
-from schemas.standing_schema import LeagueStandingResponse
-from services import sync_standings_batch, get_or_sync_standings
 from app.core.constants import FOR_TESTING
+from schemas.standing_schema import LeagueStandingResponse
+from services import get_or_sync_standings, sync_standings_batch
 
 router = APIRouter(tags=["standings"])
 

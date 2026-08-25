@@ -1,11 +1,11 @@
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+
+from app.utils import calculate_prediction_points, get_now_utc
 from models import Match
 from models.prediction import Prediction, PredictionSource
-from app.utils import calculate_prediction_points
-from app.utils import get_now_utc
 
 
 async def score_predictions(db: AsyncSession) -> dict:

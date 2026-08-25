@@ -1,9 +1,11 @@
 import logging
+
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from models import Standing
-from schemas.standing_schema import StandingRead, LeagueStandingResponse
+from schemas.standing_schema import LeagueStandingResponse, StandingRead
 from services.espn_client_standings import get_standings
 
 logger = logging.getLogger(__name__)

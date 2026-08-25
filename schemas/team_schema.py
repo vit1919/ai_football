@@ -1,5 +1,7 @@
+from datetime import datetime
+
 from pydantic import BaseModel
-from datetime import datetime, timezone
+
 
 class TeamBase(BaseModel):
     espn_id: int
