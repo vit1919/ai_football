@@ -18,13 +18,13 @@ class MatchBase(BaseModel):
 
     home_team_id : int
     home_team_name : str
-   
+
     away_team_id : int
     away_team_name : str
 
     model_config = {"from_attributes": True}
 
-  
+
 class MatchSchema(MatchBase):
     id: int | None = None
     venue_id : int | None = None

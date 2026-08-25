@@ -25,7 +25,7 @@ async def list_all_predictions(db: AsyncSession = Depends(get_db)):
 async def prediction_from_user(
     data: PredictionCreateUser,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user), 
+    current_user: User = Depends(get_current_user),
 ):
     user_prediction = await create_prediction(db, current_user, data)
     return user_prediction

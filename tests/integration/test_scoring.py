@@ -117,7 +117,7 @@ async def test_score_user_vs_llm_comparison(db_session: AsyncSession):
         match_id=match.id,
         user_id=user_winner.id,
         source=PredictionSource.USER,
-        selected_model="gemini-3.5-flash-lite", 
+        selected_model="gemini-3.5-flash-lite",
         score_home=2,
         score_away=1,
         predicted_result=Result.HOME_WIN,

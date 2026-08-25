@@ -25,7 +25,7 @@ def calculate_prediction_points(prediction: Prediction, match: Match) -> int:
 
     if predicted_goal_diff == actual_goal_diff:
         points += 1
-        
+
     if prediction.score_home == match.home_score and prediction.score_away == match.away_score:
         points += 2
 

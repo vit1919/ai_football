@@ -60,7 +60,7 @@ async def test_create_and_get_prediction(async_client: AsyncClient, db_session: 
     me_preds_res = await async_client.get("/predictions/me", headers=headers)
     assert me_preds_res.status_code == 200
     me_preds_data = me_preds_res.json()
-    
+
     assert len(me_preds_data) == 1
     assert me_preds_data[0]["match"]["home_team_name"] == "Real Madrid"
     assert me_preds_data[0]["match"]["away_team_name"] == "Barcelona"

@@ -33,4 +33,5 @@ __all__ = [
     "sync_matches",
     "today_matches_router",
     "update_prediction",
+    "teams",
 ]

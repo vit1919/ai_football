@@ -12,7 +12,7 @@ class UserBase(BaseModel):
     @classmethod
     def norm_email(cls, v: str) -> str:
         return v.strip().lower()
-    
+
     @field_validator("username")
     @classmethod
     def validate_username(cls, v: str) -> str:
@@ -21,7 +21,7 @@ class UserBase(BaseModel):
             raise ValueError("Username must be 3-30 chars, latin letters/numbers/_")
         return v
 
-    
+
 class UserLogin(BaseModel):
     email: EmailStr = Field(max_length=255)
     password: str = Field(min_length=6, max_length=72)
@@ -61,10 +61,10 @@ class LeaderboardEntry(BaseModel):
 
 class Token(BaseModel):
     access_token: str
-    refresh_token: str  
+    refresh_token: str
     token_type: str = "bearer"
 
-class RefreshTokenRequest(BaseModel): 
+class RefreshTokenRequest(BaseModel):
     refresh_token: str
 
 

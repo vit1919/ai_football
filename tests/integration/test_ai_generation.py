@@ -43,7 +43,7 @@ async def test_generate_ai_predictions_job_success(mock_call_llm, db_session: As
     assert predictions[0].score_away == 0
     assert predictions[0].source == PredictionSource.LLM
     assert predictions[0].model_name == "gemini-3.5-flash-lite"
-    
+
     mock_call_llm.assert_called_once()
 
 
@@ -87,7 +87,7 @@ async def test_generate_ai_prediction_manual_api(mock_call_llm, async_client: As
     headers = {"Authorization": f"Bearer {token}"}
 
     res = await async_client.post(f"/llm/generate/{match.event_id}", headers=headers)
-    
+
     assert res.status_code == 200
     data = res.json()
     assert data["score_home"] == 1

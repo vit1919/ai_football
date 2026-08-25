@@ -43,7 +43,7 @@ class PredictionRead(PredictionBase):
     scored_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
-    
+
 
     model_config = {"from_attributes": True, "use_enum_values": True}
 

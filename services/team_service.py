@@ -51,7 +51,7 @@ async def add_favourite_team(db: AsyncSession, user: User, team: Team) -> Favour
     existing_fav = result.scalars().one_or_none()
     if existing_fav:
         raise HTTPException(status_code=409, detail="Team already favourited")
-    
+
     fav_team = FavouriteTeam(user_id=user.id, team_id=team.id)
     db.add(fav_team)
     try:
@@ -62,7 +62,7 @@ async def add_favourite_team(db: AsyncSession, user: User, team: Team) -> Favour
     except SQLAlchemyError:
         await db.rollback()
         raise
-   
+
     await db.refresh(fav_team)
     stmt = (
         select(FavouriteTeam)
@@ -80,14 +80,14 @@ async def delete_favourite_team(db: AsyncSession, user: User, team: Team):
     existing_fav = result.scalars().one_or_none()
     if not existing_fav:
         raise HTTPException(status_code=404, detail="Favourite team not found")
-    
+
     await db.delete(existing_fav)
     try:
         await db.commit()
     except SQLAlchemyError:
         await db.rollback()
         raise
-    
+
 
 async def get_user_favourite_teams(db: AsyncSession, user: User) -> list[FavouriteTeam]:
     stmt = (

@@ -18,11 +18,11 @@ async def create_prediction(db: AsyncSession, current_user: User, data: Predicti
 
     if match is None:
         raise HTTPException(status_code=404, detail="Match not found")
-    
+
     match_date = ensure_utc(match.date)
     if match_date <= get_now_utc():
         raise HTTPException(status_code=400, detail="Match already started")
-    
+
     exists_stmt = select(Prediction.id).where(
         Prediction.user_id == current_user.id,
         Prediction.match_id == data.match_id
@@ -58,7 +58,7 @@ async def create_prediction(db: AsyncSession, current_user: User, data: Predicti
 async def get_user_predictions(db: AsyncSession, current_user: User) -> list[Prediction]:
     stmt = (
         select(Prediction)
-        .options(selectinload(Prediction.match))  
+        .options(selectinload(Prediction.match))
         .where(Prediction.user_id == current_user.id)
         .order_by(Prediction.created_at.desc())
     )
@@ -72,7 +72,7 @@ async def update_user_prediction(db: AsyncSession, current_user: User, predictio
 
     if prediction is None:
         raise HTTPException(status_code=404, detail="Prediction not found")
-    
+
     locked_at = prediction.locked_at
     if locked_at is not None and ensure_utc(locked_at) <= get_now_utc():
         raise HTTPException(status_code=403, detail="Prediction is locked and cannot be updated")
@@ -102,7 +102,7 @@ async def delete_user_prediction(db: AsyncSession, current_user: User, predictio
 
     if prediction is None:
         raise HTTPException(status_code=404, detail="Prediction not found")
-    
+
     locked_at = prediction.locked_at
     if locked_at is not None and ensure_utc(locked_at) <= get_now_utc():
         raise HTTPException(status_code=403, detail="Prediction is locked and cannot be deleted")

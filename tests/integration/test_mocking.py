@@ -25,7 +25,7 @@ async def test_fallback_team_loading(mock_get_team_info, async_client: AsyncClie
     assert result.scalar_one_or_none() is None
 
     res = await async_client.get("/teams/eng.1/999")
-    
+
     assert res.status_code == 200
     data = res.json()
     assert data["name"] == "Fake Team"
@@ -33,10 +33,10 @@ async def test_fallback_team_loading(mock_get_team_info, async_client: AsyncClie
 
     result_after = await db_session.execute(select(Team).where(Team.espn_id == 999))
     saved_team = result_after.scalar_one_or_none()
-    
+
     assert saved_team is not None
     assert saved_team.name == "Fake Team"
-    
+
     mock_get_team_info.assert_called_once_with("eng.1", 999)
 
 
@@ -58,8 +58,8 @@ async def test_sync_matches_external_api_error(mock_get_matches, async_client: A
     headers = {"Authorization": f"Bearer {token}"}
 
     res = await async_client.post("/sync_matches", headers=headers)
-    
+
     assert res.status_code == 500
     assert "Internal Server Error" in res.text
-    
+
     mock_get_matches.assert_called_once()

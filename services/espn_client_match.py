@@ -42,7 +42,7 @@ async def get_matches_today(league_list: list[str]) -> list[MatchSchema]:
                             continue
                         seen_event_ids.add(match.event_id)
                         matches.append(match)
-                        
+
                 except httpx.RequestError as e:
                     logger.warning("Network error fetching %s for %s: %s", league, date, e)
                     continue
@@ -91,12 +91,12 @@ def extract_matches(data: dict) -> list[MatchSchema]:
             home_team_form = home_team["form"] if "form" in home_team else None
             home_team_record = home_team["records"][0]["summary"] if "records" in home_team and len(home_team["records"]) > 0 else None
             home_team_logo = home_team["team"]["logo"] if "logo" in home_team["team"] else None
-            home_team_leader_id, home_team_leader_name = extract_leader(home_team)  
+            home_team_leader_id, home_team_leader_name = extract_leader(home_team)
 
             away_team = event["competitions"][0]["competitors"][1]
             away_team_id = away_team["id"]
             away_team_name = away_team["team"]["displayName"]
-            away_team_form = away_team["form"] if "form" in away_team else None 
+            away_team_form = away_team["form"] if "form" in away_team else None
             away_team_record = away_team["records"][0]["summary"] if "records" in away_team and len(away_team["records"]) > 0 else None
             away_team_logo = away_team["team"]["logo"] if "logo" in away_team["team"] else None
             away_team_leader_id, away_team_leader_name = extract_leader(away_team)
@@ -170,7 +170,7 @@ def extract_matches(data: dict) -> list[MatchSchema]:
             match_url = event["links"][0]["href"] if "links" in event and len(event["links"]) > 0 else None
             stats_url = event["links"][1]["href"] if "links" in event and len(event["links"]) > 1 else None
             highlight_url = event["links"][2]["href"] if "links" in event and len(event["links"]) > 2 else None
-            
+
             match = MatchSchema(
                 league_id=league_id,
                 league_name=league_name,

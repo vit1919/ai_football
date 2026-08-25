@@ -59,7 +59,7 @@ def extract_team_info(payload: dict) -> TeamSchema | None:
         "points_against": safe_int(stats.get("pointsAgainst")),
         "point_diff": safe_int(stats.get("pointDifferential")),
         "standing_summary": payload.get("standingSummary"),
-        
+
 
         **extract_next_event_team(team_id, team),
     }
@@ -73,7 +73,7 @@ async def get_team_info(league_slug: str, team_id: int) -> TeamRead | None:
             response.raise_for_status()
             data = response.json()
             return extract_team_info(data)
-        
+
         except httpx.HTTPError as e:
             logger.error("HTTP error fetching team info: %s", e)
         except Exception as e:

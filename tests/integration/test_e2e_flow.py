@@ -52,6 +52,6 @@ async def test_full_user_and_prediction_lifecycle(async_client: AsyncClient, db_
     lb_res = await async_client.get("/leaderboard")
     assert lb_res.status_code == 200
     lb_data = lb_res.json()
-    
+
     hero_stat = next(u for u in lb_data if u["username"] == "e2e_hero")
-    assert hero_stat["total_points"] == 6  
+    assert hero_stat["total_points"] == 6

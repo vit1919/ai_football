@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
     scheduler.shutdown()
 
     logger.info("Scheduler stopped")
-   
+
 
 app = FastAPI(title="AI Football Predictor", lifespan=lifespan)
 

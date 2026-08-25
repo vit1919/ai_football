@@ -63,10 +63,10 @@ class TeamSchema(TeamBase):
 
 
 class TeamRead(TeamSchema):
-    
+
     created_at: datetime
     updated_at: datetime
 
-    
+
 
 

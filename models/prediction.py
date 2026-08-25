@@ -28,7 +28,7 @@ class Result(enum.Enum):
 class PredictionSource(enum.Enum):
     LLM = "llm"
     USER = "user"
-    
+
 
 class Prediction(Base):
     __tablename__ = "predictions"
@@ -76,9 +76,9 @@ class Prediction(Base):
         name="uq_user_match_prediction"
     ),
     UniqueConstraint(
-        "match_id", 
-        "source", 
-        "model_name", 
+        "match_id",
+        "source",
+        "model_name",
         name="uq_match_source_model_prediction"
     ),
 )

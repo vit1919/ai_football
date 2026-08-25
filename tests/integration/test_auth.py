@@ -39,7 +39,7 @@ async def test_login_success(async_client: AsyncClient):
     })
 
     login_data = {
-        "username": "login@example.com", 
+        "username": "login@example.com",
         "password": "Password123"
     }
     response = await async_client.post("/auth/login", data=login_data)

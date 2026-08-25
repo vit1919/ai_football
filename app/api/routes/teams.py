@@ -18,6 +18,7 @@ from services import (
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["teams"])
 
+
 @router.get("/teams/{league_slug}/{team_id}", response_model=TeamSchema)
 async def get_team(league_slug: str, team_id: int, db: AsyncSession = Depends(get_db)):
     team = await get_team_by_id(db, team_id)
@@ -34,22 +35,33 @@ async def get_team(league_slug: str, team_id: int, db: AsyncSession = Depends(ge
 
 
 @router.post("/teams/{team_id}/favourite", response_model=FavouriteTeamRead)
-async def favourite_team(team_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def favourite_team(
+    team_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     team = await get_team_by_id(db, team_id)
     if team is None:
         raise HTTPException(status_code=404, detail="Team not found")
-    
+
     return await add_favourite_team(db, current_user, team)
 
 
 @router.delete("/teams/{team_id}/favourite", status_code=204)
-async def unfavourite_team(team_id: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def unfavourite_team(
+    team_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     team = await get_team_by_id(db, team_id)
     if team is None:
         raise HTTPException(status_code=404, detail="Team not found")
-    
+
     await delete_favourite_team(db, current_user, team)
-    
+
+
 @router.get("/favourite-teams/me", response_model=list[FavouriteTeamRead])
-async def get_favourite_teams(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def get_favourite_teams(
+    db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     return await get_user_favourite_teams(db, current_user)

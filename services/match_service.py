@@ -45,11 +45,11 @@ async def get_match_by_id(db: AsyncSession, event_id: int) -> Match | None:
     result = await db.execute(stmt)
 
     return result.scalars().one_or_none()
-    
+
 
 async def get_matches(db: AsyncSession, leagues: list[str] | None = None, start_at: datetime | None = None, end_at: datetime | None = None,) -> list[Match]:
     stmt = select(Match)
-    
+
     if leagues:
         stmt = stmt.where(Match.league_slug.in_(leagues))
     if start_at is not None:
