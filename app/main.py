@@ -5,6 +5,9 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 from app.api.routes.auth import router as auth
 from app.api.routes.leaderboard import router as leaderboard_router
@@ -14,6 +17,7 @@ from app.api.routes.predictions import router as predictions_router
 from app.api.routes.standings import router as standings_router
 from app.api.routes.teams import router as teams
 from app.core.database import Base, engine
+from app.core.limiter import limiter
 from app.scheduler.scheduler import scheduler
 
 logging.basicConfig(
@@ -42,6 +46,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="AI Football Predictor", lifespan=lifespan)
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+app.add_middleware(SlowAPIMiddleware)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -65,10 +74,10 @@ app.include_router(leaderboard_router)
 app.include_router(llm_router)
 app.include_router(standings_router)
 
+
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "message": "Сервер запущен"}
-
+    return {"status": "ok", "message": "server is up and running"}
 
 
 if __name__ == "__main__":

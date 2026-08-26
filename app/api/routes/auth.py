@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,6 +9,7 @@ from app.core.jwt import (
     create_refresh_token,
     decode_refresh_token,
 )
+from app.core.limiter import limiter
 from app.core.security import verify_password
 from models.user import User
 from schemas.user_schema import (
@@ -34,8 +35,12 @@ async def get_me(current_user: User = Depends(get_current_user)):
 
 
 @router.post("/register", response_model=UserRead, status_code=201)
-async def register(data: UserCreate, db: AsyncSession = Depends(get_db)):
-
+@limiter.limit("10/minute")
+async def register(
+    request: Request,
+    data: UserCreate,
+    db: AsyncSession = Depends(get_db),
+):
     if await user_email_exists(db, data.email):
         raise HTTPException(status_code=400, detail="Email already registered")
     if await username_exists(db, data.username):
@@ -52,8 +57,11 @@ async def register(data: UserCreate, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login", response_model=Token)
+@limiter.limit("5/minute")
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
+    request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(get_db),
 ):
     user = await get_user_by_email(db, form_data.username)
     if user is None or not verify_password(form_data.password, user.hashed_password):
@@ -71,7 +79,9 @@ async def login(
 
 
 @router.post("/refresh", response_model=Token)
+@limiter.limit("15/minute")
 async def refresh_tokens(
+    request: Request,
     payload: RefreshTokenRequest,
     db: AsyncSession = Depends(get_db),
 ):

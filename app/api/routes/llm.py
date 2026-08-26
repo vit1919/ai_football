@@ -1,11 +1,12 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_current_user, get_db
 from app.core.config import settings
 from app.core.constants import AVAILABLE_LLM_MODELS
+from app.core.limiter import limiter
 from models.user import User
 from schemas.llm_schema import (
     AIPredictionResponse,
@@ -27,7 +28,9 @@ async def list_models() -> list[LLMModelRead]:
 
 
 @router.post("/generate/{match_id}", response_model=AIPredictionResponse)
+@limiter.limit("10/minute")
 async def generate_for_match(
+    request: Request,
     match_id: int,
     model: str | None = None,
     db: AsyncSession = Depends(get_db),
@@ -45,7 +48,9 @@ async def generate_for_match(
     except ValueError as e:
         raise HTTPException(status_code=409, detail=str(e))
     except Exception as e:
-        logger.error("LLM prediction failed for match %s: %s", match_id, e, exc_info=True)
+        logger.error(
+            "LLM prediction failed for match %s: %s", match_id, e, exc_info=True
+        )
         raise HTTPException(status_code=500, detail="LLM prediction failed")
 
     return AIPredictionResponse(

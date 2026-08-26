@@ -1,10 +1,11 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_current_user, get_current_user_optional, get_db
 from app.core.constants import FOR_TESTING
+from app.core.limiter import limiter
 from app.utils import get_today_range_utc
 from models import User
 from schemas import MatchDetailResponse, MatchSchemaIndexPage
@@ -22,15 +23,17 @@ router = APIRouter(tags=["matches"])
 
 
 @router.post("/sync_matches", dependencies=[Depends(get_current_user)])
-async def sync_matches(db: AsyncSession = Depends(get_db)) -> dict:
+@limiter.limit("3/minute")
+async def sync_matches(request: Request, db: AsyncSession = Depends(get_db)) -> dict:
     matches = await get_matches_today(FOR_TESTING)
     stats = await save_matches(db, matches)
 
     return {
         "api_received": stats["matches_received"],
         "added_to_db": stats["added"],
-        "already_in_db": stats["matches_received"] - stats["added"]
+        "already_in_db": stats["matches_received"] - stats["added"],
     }
+
 
 @router.get("/matches", response_model=list[MatchSchemaIndexPage])
 async def list_matches(
@@ -47,10 +50,11 @@ async def list_all_matches(db: AsyncSession = Depends(get_db)):
     return await get_all_matches(db)
 
 
-
-#index
+# index
 @router.get("/matches/today", response_model=list[MatchSchemaIndexPage])
-async def list_matches_today(db: AsyncSession = Depends(get_db)) -> list[MatchSchemaIndexPage]:
+async def list_matches_today(
+    db: AsyncSession = Depends(get_db),
+) -> list[MatchSchemaIndexPage]:
     start, end = get_today_range_utc()
     return await get_matches(db, start_at=start, end_at=end)
 
@@ -80,4 +84,3 @@ async def get_detailed_match(
 ):
     match, user_prediction = await get_match_detail(db, event_id, current_user)
     return MatchDetailResponse(match=match, user_prediction=user_prediction)
-
