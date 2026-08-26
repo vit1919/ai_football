@@ -1,15 +1,24 @@
+import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.api.dependencies import get_db
 from app.core.database import Base
+from app.core.limiter import limiter
 from app.main import app
 
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=False)
 TestingSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
+
+
+@pytest.fixture(autouse=True)
+def disable_rate_limits():
+    limiter.enabled = False
+    yield
+    limiter.enabled = True
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -23,7 +32,6 @@ async def setup_database():
 
 @pytest_asyncio.fixture
 async def db_session():
-
     async with TestingSessionLocal() as session:
         yield session
 
@@ -32,11 +40,12 @@ async def db_session():
 async def async_client(db_session):
     async def override_get_db():
         yield db_session
+
     app.dependency_overrides[get_db] = override_get_db
 
     async with AsyncClient(
         transport=ASGITransport(app=app, raise_app_exceptions=False),
-        base_url="http://test"
+        base_url="http://test",
     ) as client:
         yield client
 
