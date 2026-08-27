@@ -37,12 +37,11 @@ CUPS_AND_SUPER_CUPS = [
 
 FOR_TESTING = [
     "usa.1",
-    "uefa.champions_qual",
-    "uefa.europa_qual",
-    "uefa.europa.conf_qual",
-    "eng.league_cup",
     "esp.1",
-    "eng.2",
+    "ita.1",
+    "ger.1",
+    "fra.1",
+    "uefa.champions",
 ]
 
 AVAILABLE_LLM_MODELS = [

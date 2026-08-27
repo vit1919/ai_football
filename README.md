@@ -10,7 +10,9 @@
 [![Google Gemini](https://img.shields.io/badge/Google%20Gemini-1.0+-4285F4.svg?style=flat&logo=Google&logoColor=white)](https://ai.google.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4+-38B2AC.svg?style=flat&logo=Tailwind-CSS&logoColor=white)](https://tailwindcss.com/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?style=flat&logo=Docker&logoColor=white)](https://www.docker.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/vit1919/ai-football-predictor/actions/workflows/tests.yml/badge.svg)](https://github.com/vit1919/ai-football-predictor/actions/workflows/tests.yml)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
 
 [Features](#-key-features) •
 [Screenshots](#-screenshots--ui-preview) •
@@ -98,6 +100,8 @@ The website automatically gathers information about live matches, odds, and team
 -  **Secure Authentication**: JWT Access & Refresh token rotation with silent Axios client refresh interceptors.
 -  **Background Automation**: Background synchronization of matches, AI generation, and points calculation using APScheduler.
 - **Fully Non-Blocking I/O:** Built with Python 3.12, FastAPI, and `aiosqlite` with async SQLAlchemy 2.0 ORM sessions.
+- **API Rate Limiting & Protection**: Strict request throttling via `slowapi` to protect against auth brute-force attacks, scraper spam, and AI quota exhaustion.
+- **Automated CI/CD Pipeline**: GitHub Actions workflow automatically verifying code formatting, linting rules via Ruff, and executing 20+ async Pytest integration tests on every push/PR.
 
 ---
 
@@ -109,6 +113,8 @@ The website automatically gathers information about live matches, odds, and team
 ### **Backend**
 - **Framework:** FastAPI (Python 3.12)
 - **Database & ORM:** SQLite / PostgreSQL with async SQLAlchemy 2.0 & `aiosqlite`
+- **Rate Limiting:** SlowAPI 
+- **Code Quality:** Ruff (Linter & Formatter)
 - **Scheduler:** APScheduler (AsyncIOScheduler)
 - **AI Integration:** Google Gemini API (`google-genai` SDK)
 - **Data Ingestion:** HTTPX async client (ESPN Scoreboard & Standings endpoints)
@@ -124,6 +130,7 @@ The website automatically gathers information about live matches, odds, and team
 - **Icons:** Lucide React
 
 ### **DevOps & Deployment**
+- **CI/CD:** GitHub Actions (Automated Ruff linting + PyTest test suite)
 - **Docker Compose:** Multi-stage build (FastAPI + Nginx Reverse Proxy)
 - **Web Server:** Nginx Alpine (production frontend hosting & API proxy)
 
@@ -149,6 +156,7 @@ The website automatically gathers information about live matches, odds, and team
 ├── docker-compose.yml            # Container orchestration config
 ├── Dockerfile                    # Backend container definition (uv + python)
 └── pyproject.toml                # Python dependencies & metadata
+```
 
 ## 🚀 Quick Start
 
@@ -244,16 +252,20 @@ The system automatically runs periodic async jobs:
 | `sync_standings`          | Every 30 mins | Refreshes league standings, point totals, and goal differences. |
 
 
-# 🧪 Running Tests
+## 🧪 Testing & Code Quality
 
-The test suite includes full integration flows (E2E lifecycle, auth token
-rotation, scoring algorithms, and mocked ESPN/LLM handlers):
+The test suite includes full integration flows (E2E lifecycle, auth token rotation, scoring algorithms, rate limiter verification, and mocked ESPN/LLM handlers):
+
+```bash
+# Run Ruff linting check
+uv run ruff check .
 
 # Run pytest with async support
 uv run pytest -v
 
 # Run with test coverage
 uv run pytest --cov=app --cov=services
+```
 
 # 🔌 API Endpoints (Overview)
 
