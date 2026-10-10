@@ -12,12 +12,14 @@ from services.ai_prediction_service import generate_for_upcoming_matches
 
 @pytest.mark.asyncio
 @patch("services.ai_prediction_service.call_llm")
-async def test_generate_ai_predictions_job_success(mock_call_llm, db_session: AsyncSession):
+async def test_generate_ai_predictions_job_success(
+    mock_call_llm, db_session: AsyncSession
+):
     mock_call_llm.return_value = {
         "score_home": 2,
         "score_away": 0,
         "confidence": 0.85,
-        "reasoning": "Home team in great form"
+        "reasoning": "Home team in great form",
     }
 
     upcoming_match = Match(
@@ -36,7 +38,9 @@ async def test_generate_ai_predictions_job_success(mock_call_llm, db_session: As
     db_session.add(upcoming_match)
     await db_session.commit()
 
-    predictions = await generate_for_upcoming_matches(db_session, model_name="gemini-3.5-flash-lite")
+    predictions = await generate_for_upcoming_matches(
+        db_session, model_name="gemini-3.5-flash-lite"
+    )
 
     assert len(predictions) == 1
     assert predictions[0].score_home == 2
@@ -47,16 +51,13 @@ async def test_generate_ai_predictions_job_success(mock_call_llm, db_session: As
     mock_call_llm.assert_called_once()
 
 
-
-#тест ручного роута
+# тест ручного роута
 @pytest.mark.asyncio
 @patch("services.ai_prediction_service.call_llm")
-async def test_generate_ai_prediction_manual_api(mock_call_llm, async_client: AsyncClient, db_session: AsyncSession):
-    mock_call_llm.return_value = {
-        "score_home": 1,
-        "score_away": 1,
-        "confidence": 0.70
-    }
+async def test_generate_ai_prediction_manual_api(
+    mock_call_llm, async_client: AsyncClient, db_session: AsyncSession
+):
+    mock_call_llm.return_value = {"score_home": 1, "score_away": 1, "confidence": 0.70}
 
     match = Match(
         league_id=1,
@@ -74,15 +75,17 @@ async def test_generate_ai_prediction_manual_api(mock_call_llm, async_client: As
     db_session.add(match)
     await db_session.commit()
 
-    await async_client.post("/auth/register", json={
-        "username": "llm_tester",
-        "email": "llm@test.com",
-        "password": "Password123"
-    })
-    login_res = await async_client.post("/auth/login", data={
-        "username": "llm@test.com",
-        "password": "Password123"
-    })
+    await async_client.post(
+        "/auth/register",
+        json={
+            "username": "llm_tester",
+            "email": "llm@test.com",
+            "password": "Password123",
+        },
+    )
+    login_res = await async_client.post(
+        "/auth/login", data={"username": "llm@test.com", "password": "Password123"}
+    )
     token = login_res.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 

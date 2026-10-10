@@ -8,26 +8,58 @@ def test_calc_result():
     assert calc_result(0, 2) == Result.AWAY_WIN
     assert calc_result(1, 1) == Result.DRAW
 
+
 def test_calculate_prediction_points_exact_score():
     match = Match(home_score=2, away_score=1)
-    prediction = Prediction(score_home=2, score_away=1, predicted_result=Result.HOME_WIN)
+    prediction = Prediction(
+        score_home=2, score_away=1, predicted_result=Result.HOME_WIN
+    )
     points = calculate_prediction_points(prediction, match)
     assert points == 6
 
+
 def test_calculate_prediction_points_goal_difference():
     match = Match(home_score=2, away_score=0)
-    prediction = Prediction(score_home=3, score_away=1, predicted_result=Result.HOME_WIN)
+    prediction = Prediction(
+        score_home=3, score_away=1, predicted_result=Result.HOME_WIN
+    )
     points = calculate_prediction_points(prediction, match)
     assert points == 4
 
+
 def test_calculate_prediction_points_only_outcome():
     match = Match(home_score=3, away_score=1)
-    prediction = Prediction(score_home=1, score_away=0, predicted_result=Result.HOME_WIN)
+    prediction = Prediction(
+        score_home=1, score_away=0, predicted_result=Result.HOME_WIN
+    )
     points = calculate_prediction_points(prediction, match)
     assert points == 3
 
+
 def test_calculate_prediction_points_wrong_prediction():
     match = Match(home_score=1, away_score=2)
-    prediction = Prediction(score_home=2, score_away=0, predicted_result=Result.HOME_WIN)
+    prediction = Prediction(
+        score_home=2, score_away=0, predicted_result=Result.HOME_WIN
+    )
     points = calculate_prediction_points(prediction, match)
     assert points == 0
+
+
+def test_calculate_prediction_points_none_score():
+    match = Match(home_score=None, away_score=None)
+    prediction = Prediction(
+        score_home=2, score_away=1, predicted_result=Result.HOME_WIN
+    )
+    assert calculate_prediction_points(prediction, match) == 0
+
+
+def test_calculate_prediction_points_exact_draw():
+    match = Match(home_score=1, away_score=1)
+    prediction = Prediction(score_home=1, score_away=1, predicted_result=Result.DRAW)
+    assert calculate_prediction_points(prediction, match) == 6
+
+
+def test_calculate_prediction_points_goal_difference_draw():
+    match = Match(home_score=2, away_score=2)
+    prediction = Prediction(score_home=0, score_away=0, predicted_result=Result.DRAW)
+    assert calculate_prediction_points(prediction, match) == 4

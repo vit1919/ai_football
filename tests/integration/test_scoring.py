@@ -9,7 +9,9 @@ from models.user import User
 from services.jobs_service import score_predictions
 
 
-async def create_completed_match(db: AsyncSession, home_score: int = 2, away_score: int = 1) -> Match:
+async def create_completed_match(
+    db: AsyncSession, home_score: int = 2, away_score: int = 1
+) -> Match:
     match = Match(
         league_id=1,
         league_slug="test_league",
@@ -51,7 +53,9 @@ async def test_score_predictions_exact_and_partial(db_session: AsyncSession):
     match = await create_completed_match(db_session, home_score=2, away_score=1)
 
     user_exact = await create_test_user(db_session, "exact_guy", "exact@example.com")
-    user_outcome = await create_test_user(db_session, "outcome_guy", "outcome@example.com")
+    user_outcome = await create_test_user(
+        db_session, "outcome_guy", "outcome@example.com"
+    )
     user_wrong = await create_test_user(db_session, "wrong_guy", "wrong@example.com")
 
     pred1 = Prediction(
@@ -97,6 +101,7 @@ async def test_score_predictions_exact_and_partial(db_session: AsyncSession):
 
     await db_session.refresh(match)
     assert match.predictions_scored is True
+
 
 @pytest.mark.asyncio
 async def test_score_user_vs_llm_comparison(db_session: AsyncSession):

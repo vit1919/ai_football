@@ -11,7 +11,9 @@ from schemas.team_schema import TeamSchema
 
 @pytest.mark.asyncio
 @patch("app.api.routes.teams.get_team_info")
-async def test_fallback_team_loading(mock_get_team_info, async_client: AsyncClient, db_session: AsyncSession):
+async def test_fallback_team_loading(
+    mock_get_team_info, async_client: AsyncClient, db_session: AsyncSession
+):
     fake_team = TeamSchema(
         espn_id=999,
         name="Fake Team",
@@ -42,18 +44,22 @@ async def test_fallback_team_loading(mock_get_team_info, async_client: AsyncClie
 
 @pytest.mark.asyncio
 @patch("app.api.routes.matches.get_matches_today")
-async def test_sync_matches_external_api_error(mock_get_matches, async_client: AsyncClient, db_session: AsyncSession):
+async def test_sync_matches_external_api_error(
+    mock_get_matches, async_client: AsyncClient, db_session: AsyncSession
+):
     mock_get_matches.side_effect = Exception("ESPN API is down")
 
-    await async_client.post("/auth/register", json={
-        "username": "error_tester",
-        "email": "error@example.com",
-        "password": "Password123"
-    })
-    login_res = await async_client.post("/auth/login", data={
-        "username": "error@example.com",
-        "password": "Password123"
-    })
+    await async_client.post(
+        "/auth/register",
+        json={
+            "username": "error_tester",
+            "email": "error@example.com",
+            "password": "Password123",
+        },
+    )
+    login_res = await async_client.post(
+        "/auth/login", data={"username": "error@example.com", "password": "Password123"}
+    )
     token = login_res.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 

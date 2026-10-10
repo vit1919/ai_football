@@ -112,7 +112,7 @@ The website automatically gathers information about live matches, odds, and team
 
 ### **Backend**
 - **Framework:** FastAPI (Python 3.12)
-- **Database & ORM:** SQLite / PostgreSQL with async SQLAlchemy 2.0 & `aiosqlite`
+- **Database & ORM:** SQLite with `aiosqlite`
 - **Rate Limiting:** SlowAPI 
 - **Code Quality:** Ruff (Linter & Formatter)
 - **Scheduler:** APScheduler (AsyncIOScheduler)
@@ -160,7 +160,7 @@ The website automatically gathers information about live matches, odds, and team
 
 ## 🚀 Quick Start
 
-### 🐳 Option A: Instant Run via Docker Hub (Recommended)
+### 🐳 Option A: Instant Run via Docker Hub
 
 No local compilers or repositories required. Pull and run pre-built images directly:
 
